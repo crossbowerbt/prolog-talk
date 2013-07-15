@@ -176,32 +176,6 @@
         (t (loop for i from 1 to (- len 1)
               collect (subseq list 0 i)))))
 
-(defun list-partitions (lst &optional (len 0) (hlen 1))
-  "Generate all possible partitions for the given list."
-  (cond ((and lst (= len 0)) (list-partitions lst (length lst)))  
-        ((< len 1) (list lst))
-        ((= len 1) (list (list lst)))
-        ((> hlen len) nil)
-        (t (append (list-partitions lst len (+ hlen 1))
-                   (mapcan (lambda (tail)
-                             (list (append (list (subseq lst 0 hlen))
-                                           (if (and tail (atom tail)) (list tail)
-                                               tail))))
-                           (list-partitions (subseq lst hlen len) (- len hlen) 1))))))
-
-(defun list-partitions2 (lst)
-  "Pretty print list-partitions."
-  (let ((partitions (list-partitions lst)))
-    (loop for l in partitions
-       do (format t "~&~a" l))
-    (format t "~&list len: ~a" (length lst))
-    (format t "~&tot partitions: ~a~&" (length partitions))))
-
-(defun partition-to-pl-vars (lst)
-  "Convert a list partition in a format suitable for prolog unification."
-  (mapcar (lambda (elem)
-            (intern (format nil "~{~a~^ ~}" elem)))
-          lst))
 
 (defun pl-repl ()
   "A simple repl for the system."
