@@ -250,6 +250,24 @@
     (= ?FIRST (lop (first ?ADJS))) (= ?REST (lop (rest ?ADJS)))
     (adjective ?FIRST) (adjective-list ?REST))
 
+;; Verbs
+
+(*- (noun ?VERB) (lop (grammar-cmp ?VERB :verb)))
+
+;; to Be, to Have
+
+(*- (to-be am))
+(*- (to-be are))
+(*- (to-be is))
+
+(*- (to-be-past was))
+(*- (to-be-past were))
+
+(*- (to-have have))
+(*- (to-have has))
+
+(*- (to-have-past had))
+
 ;;;; Phrase Structure
 
 (defun genkey ()
@@ -303,3 +321,67 @@
     (adjective ?KEY ?ADJ) (noun ?KEY ?NOUN))
 
 (*- (noun-phrase ? ; maybe 2 categories to do separation?
+
+;;;; Lesson 1
+
+;; Present Simple
+
+(*- (present-simple ?VERB) (verb ?VERB)) ; maybe last...
+
+;; Present Continuous
+
+(*- (present-continuous ?BE ?VERB) (to-be ?BE) (lop (grammar-cmp ?VERB :verb+ing)))
+
+;;;; Lesson 2
+
+;; Present Perfect
+
+(*- (present-perfect ?HAVE ?VERB) (to-have ?HAVE) (lop (grammar-cmp ?VERB :past-participle)))
+
+;; Past Simple
+
+(*- (past-simple ?VERB) (lop (grammar-cmp ?VERB :past-participle)))
+
+;;;; Lesson 4
+
+;; Future Simple
+
+(*- (future-simple will ?VERB) (verb ?VERB))
+
+;; Future with Be + Going To
+
+(*- (future-going-to ?BE going to ?VERB) (to-be ?BE) (verb ?VERB))
+
+;; Future with Present Continuous
+
+(*- (future-present-continuous ?BE ?VERB) (present-continuous ?BE ?VERB))
+
+;; Future with Present Simple
+
+(*- (future-present-simple ?VERB) (present-simple ?VERB))
+
+;;;; Lesson 8
+
+;; Present Conditional
+
+(*- (future-simple would ?VERB) (verb ?VERB))
+(*- (future-simple should ?VERB) (verb ?VERB))
+(*- (future-simple might ?VERB) (verb ?VERB))
+
+;; TODO: add natural logic to these...
+
+;; Zero Conditional (if + present + present)
+
+;; First Conditional (if + present (simple|continuous|perfect) + future simple)
+
+;; Second Conditional (if + past (simple|continuous) + present conditional)
+
+;;;; Lesson 9
+
+;; Present Perfect Continuous
+
+(*- (present-perfect-continuous ?HAVE been ?VERB) (to-have ?HAVE) (lop (grammar-cmp ?VERB :past-participle)))
+
+;; Past Continuous
+
+(*- (past-continuous ?WAS ?VERB) (to-be-past ?WAS) (lop (grammar-cmp ?VERB :verb+ing)))
