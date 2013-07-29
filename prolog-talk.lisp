@@ -220,6 +220,14 @@
             (intern (format nil "~{~a~^ ~}" elem)))
           lst))
 
+;;;; To Solve Variable Lenght Omogeneous Queries
+
+(defun pl-solve-one-list (predicate lst)
+  "Compose a list of queries and try to solve them.
+   Support only unary predicates."
+  (pl-solve-one (loop for elem in lst
+		   collect (list predicate elem))))
+
 ;;;; Basic Language Stuff
 
 (defun grammar-cmp (word type)
@@ -244,11 +252,14 @@
 (*- (adjective ?ADJ) (lop (grammar-cmp ?ADJ :adjective)))
 
 (*- (adjective-list ?ADJS) (lop (listp ?ADJS))
-    (= ?FIRST (lop (first ?ADJS))) (= ?REST (lop (rest ?ADJS)))
-    (adjective ?FIRST) (lop (null ?REST)))
-(*- (adjective-list ?ADJS) (lop (listp ?ADJS))
-    (= ?FIRST (lop (first ?ADJS))) (= ?REST (lop (rest ?ADJS)))
-    (adjective ?FIRST) (adjective-list ?REST))
+    (lop (pl-solve-one-list 'adjective ?ADJS)))
+
+;(*- (adjective-list ?ADJS) (lop (listp ?ADJS))
+;    (= ?FIRST (lop (first ?ADJS))) (= ?REST (lop (rest ?ADJS)))
+;    (adjective ?FIRST) (lop (null ?REST)))
+;(*- (adjective-list ?ADJS) (lop (listp ?ADJS))
+;    (= ?FIRST (lop (first ?ADJS))) (= ?REST (lop (rest ?ADJS)))
+;    (adjective ?FIRST) (adjective-list ?REST))
 
 ;; Verbs
 
@@ -276,97 +287,174 @@
 
 ;; Noun Phrases
 
-(*- (noun-phrase ?ART ?ADJ ?NOUN ?KEY)
-    ; add adjective and noun to an abstract language object
+(*- (noun-phrase ?PHRASE) (noun-phrase-deter ?PHRASE))
+(*- (noun-phrase ?PHRASE) (noun-phrase-indet ?PHRASE))
+
+; Indeterminative Variants
+
+(*- (noun-phrase-indet ?ART ?ADJ ?NOUN ?KEY)
+    ; add adjective and noun to an entity
     (exists ?KEY) (indeterminative ?ART) (adjective ?ADJ) (noun ?NOUN)
     (asserta (adjective ?KEY ?ADJ)) (asserta (noun ?KEY ?NOUN)))
 
-(*- (noun-phrase ?ART ?ADJS ?NOUN ?KEY)
-    ; add multiple adjectives to an abstract language object
+(*- (noun-phrase-indet ?ART ?ADJS ?NOUN ?KEY)
+    ; add multiple adjectives to an entity
     (exists ?KEY) (indeterminative ?ART) (adjective-list ?ADJS) (noun ?NOUN)
     (= ?FIRST (lop (first ?ADJS))) (= ?REST (lop (rest ?ADJS)))
     (lop (null ?REST))
-    (noun-phrase ?ART ?FIRST ?NOUN ?KEY)) ; recurse
+    (noun-phrase-indet ?ART ?FIRST ?NOUN ?KEY)) ; recurse
 
-(*- (noun-phrase ?ART ?ADJS ?NOUN ?KEY)
-    ; add multiple adjectives to an abstract language object
+(*- (noun-phrase-indet ?ART ?ADJS ?NOUN ?KEY)
+    ; add multiple adjectives to an entity
     (exists ?KEY) (indeterminative ?ART) (adjective-list ?ADJS) (noun ?NOUN)
     (= ?FIRST (lop (first ?ADJS))) (= ?REST (lop (rest ?ADJS)))
     (asserta (adjective ?KEY ?FIRST))
-    (noun-phrase ?ART ?REST ?NOUN ?KEY)) ; recurse
+    (noun-phrase-indet ?ART ?REST ?NOUN ?KEY)) ; recurse
 
-(*- (noun-phrase ?ART ?ADJ ?NOUN ?KEY)
-    ; create a new abstract language object
+(*- (noun-phrase-indet ?ART ?ADJ ?NOUN ?KEY)
+    ; create a new entity
     (indeterminative ?ART) (adjective ?ADJ) (noun ?NOUN)
     (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
-    (noun-phrase ?ART ?ADJ ?NOUN ?KEY)) ; recurse
+    (noun-phrase-indet ?ART ?ADJ ?NOUN ?KEY)) ; recurse
 
-(*- (noun-phrase ?ART ?ADJS ?NOUN ?KEY)
-    ; retrieve a known abstract language object key
+; Determinative Variants
+
+(*- (noun-phrase-deter ?ART ?ADJS ?NOUN ?KEY)
+    ; retrieve a known entity
     (determinative ?ART)  (adjective-list ?ADJS) (noun ?NOUN)
     (= ?FIRST (lop (first ?ADJS))) (= ?REST (lop (rest ?ADJS)))
     (lop (null ?REST))
-    (noun-phrase ?ART ?FIRST ?NOUN ?KEY)) ; recurse
+    (noun-phrase-deter ?ART ?FIRST ?NOUN ?KEY)) ; recurse
 
-(*- (noun-phrase ?ART ?ADJS ?NOUN ?KEY)
-    ; retrieve a known abstract language object key
+(*- (noun-phrase-deter ?ART ?ADJS ?NOUN ?KEY)
+    ; retrieve a known entity
     (determinative ?ART)  (adjective-list ?ADJS) (noun ?NOUN)
     (= ?FIRST (lop (first ?ADJS))) (= ?REST (lop (rest ?ADJS)))
     (adjective ?KEY ?FIRST)
-    (noun-phrase ?ART ?REST ?NOUN ?KEY)) ; recurse
+    (noun-phrase-deter ?ART ?REST ?NOUN ?KEY)) ; recurse
 
-(*- (noun-phrase ?ART ?ADJ ?NOUN ?KEY)
-    ; retrieve a known abstract language object key
+(*- (noun-phrase-deter ?ART ?ADJ ?NOUN ?KEY)
+    ; retrieve a known entity
     (determinative ?ART)  (adjective ?ADJ) (noun ?NOUN)
     (adjective ?KEY ?ADJ) (noun ?KEY ?NOUN))
 
-(*- (noun-phrase ? ; maybe 2 categories to do separation?
+;; Verbal Phrase
+
+(*- (verbal-phrase ?PHRASE) (transitive-verbal-phrase ?PHRASE))
+(*- (verbal-phrase ?PHRASE) (intransitive-verbal-phrase ?PHRASE))
+
+(*- (transitive-verbal-phrase ?SUBJ-PHRASE ?PRED ?OBJ-PHRASE)
+    (verbal-predicate ?PRED ?KEY-P)
+    (noun-phrase ?SUBJ-PHRASE ?KEY-S)
+    (noun-phrase ?OBJ-PHRASE ?KEY-O)
+    ; link entities
+    (asserta (predicate ?KEY-S ?KEY-P))
+    (asserta (predicate-passive ?KEY-O ?KEY-P))
+    (asserta (subject ?KEY-P ?KEY-S))
+    (asserta (object ?KEY-P ?KEY-O)))
+
+(*- (intransitive-verbal-phrase ?SUBJ-PHRASE ?PRED)
+    (verbal-predicate ?PRED ?KEY-P)
+    (noun-phrase ?SUBJ-PHRASE ?KEY-S)
+    ; link entities
+    (asserta (predicate ?KEY-S ?KEY-P))
+    (asserta (subject ?KEY-P ?KEY-S)))
+
+; Verbal Predicates
+; Note: order is from most specific to most general...
+
+(*- (verbal-predicate ?PRED ?KEY) (past-continuous ?PRED ?KEY))
+(*- (verbal-predicate ?PRED ?KEY) (present-perfect-continuous ?PRED ?KEY))
+(*- (verbal-predicate ?PRED ?KEY) (present-continuous ?PRED ?KEY))
+(*- (verbal-predicate ?PRED ?KEY) (future-present-continuous ?PRED ?KEY))
+(*- (verbal-predicate ?PRED ?KEY) (future-going-to ?PRED ?KEY))
+(*- (verbal-predicate ?PRED ?KEY) (future-simple ?PRED ?KEY))
+(*- (verbal-predicate ?PRED ?KEY) (past-simple ?PRED ?KEY))
+(*- (verbal-predicate ?PRED ?KEY) (present-perfect ?PRED ?KEY))
+(*- (verbal-predicate ?PRED ?KEY) (present-continuous ?PRED ?KEY))
+(*- (verbal-predicate ?PRED ?KEY) (present-simple ?PRED ?KEY))
+(*- (verbal-predicate ?PRED ?KEY) (future-present-simple ?PRED ?KEY))
 
 ;;;; Lesson 1
 
 ;; Present Simple
 
-(*- (present-simple ?VERB) (verb ?VERB)) ; maybe last...
+(*- (present-simple ?VERB ?KEY) (verb ?VERB)
+    ; create a new predicate entity
+    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
+    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY present-simple)))
 
 ;; Present Continuous
 
-(*- (present-continuous ?BE ?VERB) (to-be ?BE) (lop (grammar-cmp ?VERB :verb+ing)))
+(*- (present-continuous ?BE ?VERB) (to-be ?BE) (lop (grammar-cmp ?VERB :verb+ing))
+    ; create a new predicate entity
+    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
+    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY present-continuous)))
 
 ;;;; Lesson 2
 
 ;; Present Perfect
 
-(*- (present-perfect ?HAVE ?VERB) (to-have ?HAVE) (lop (grammar-cmp ?VERB :past-participle)))
+(*- (present-perfect ?HAVE ?VERB) (to-have ?HAVE) (lop (grammar-cmp ?VERB :past-participle))
+    ; create a new predicate entity
+    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
+    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY present-perfect)))
 
 ;; Past Simple
 
-(*- (past-simple ?VERB) (lop (grammar-cmp ?VERB :past-participle)))
+(*- (past-simple ?VERB) (lop (grammar-cmp ?VERB :past-participle))
+    ; create a new predicate entity
+    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
+    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY past-simple)))
 
 ;;;; Lesson 4
 
 ;; Future Simple
 
-(*- (future-simple will ?VERB) (verb ?VERB))
+(*- (future-simple will ?VERB) (verb ?VERB)
+    ; create a new predicate entity
+    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
+    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY future-simple)))
 
 ;; Future with Be + Going To
 
-(*- (future-going-to ?BE going to ?VERB) (to-be ?BE) (verb ?VERB))
+(*- (future-going-to ?BE going to ?VERB) (to-be ?BE) (verb ?VERB)
+    ; create a new predicate entity
+    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
+    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY future-going-to)))
 
 ;; Future with Present Continuous
 
-(*- (future-present-continuous ?BE ?VERB) (present-continuous ?BE ?VERB))
+(*- (future-present-continuous ?BE ?VERB) (present-continuous ?BE ?VERB)
+    ; create a new predicate entity
+    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
+    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY future-present-continuous)))
 
 ;; Future with Present Simple
 
-(*- (future-present-simple ?VERB) (present-simple ?VERB))
+(*- (future-present-simple ?VERB) (present-simple ?VERB)
+    ; create a new predicate entity
+    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
+    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY future-present-simple)))
 
 ;;;; Lesson 8
 
 ;; Present Conditional
 
-(*- (future-simple would ?VERB) (verb ?VERB))
-(*- (future-simple should ?VERB) (verb ?VERB))
-(*- (future-simple might ?VERB) (verb ?VERB))
+(*- (present-conditional would ?VERB) (verb ?VERB)
+    ; create a new predicate entity
+    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
+    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY present-conditional)))
+
+(*- (present-conditional should ?VERB) (verb ?VERB)
+    ; create a new predicate entity
+    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
+    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY present-conditional)))
+
+(*- (present-conditional might ?VERB) (verb ?VERB)
+    ; create a new predicate entity
+    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
+    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY present-conditional)))
 
 ;; TODO: add natural logic to these...
 
@@ -380,8 +468,31 @@
 
 ;; Present Perfect Continuous
 
-(*- (present-perfect-continuous ?HAVE been ?VERB) (to-have ?HAVE) (lop (grammar-cmp ?VERB :past-participle)))
+(*- (present-perfect-continuous ?HAVE been ?VERB) (to-have ?HAVE) (lop (grammar-cmp ?VERB :past-participle))
+    ; create a new predicate entity
+    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
+    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY present-perfect-continuous)))
 
 ;; Past Continuous
 
-(*- (past-continuous ?WAS ?VERB) (to-be-past ?WAS) (lop (grammar-cmp ?VERB :verb+ing)))
+(*- (past-continuous ?WAS ?VERB) (to-be-past ?WAS) (lop (grammar-cmp ?VERB :verb+ing))
+    ; create a new predicate entity
+    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
+    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY past-continuous)))
+
+;;;; REPL
+
+(defun pl-repl ()
+  "A simple repl for the system."
+  (format t "~&> ")
+  (let ((input (read-from-string (concatenate 'string "(" (read-line) ")"))))
+    (when (not (equal input '(quit)))
+      (let* ((queries (mapcar #'partition-to-pl-vars
+                              (list-partitions input)))
+             (answers (mapcan (lambda (query)
+                                (pl-solve-one (list (append '(category) query '(?answer)))))
+                              queries)))
+        (mapc (lambda (answer)
+                (format t "~a" (cdr answer)))
+              answers)
+        (pl-repl)))))
