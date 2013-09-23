@@ -1,0 +1,32 @@
+#+TITLE: PROLOG-TALK
+
+* Description
+This project is written in *Common Lisp* and an implementation of *Prolog* built on top of it (https://code.google.com/p/cl-gambol/), for the 2013 summer programming contest Lisp in Summer Projects (http://lispinsummerprojects.org/).
+
+With this project I wanted to create a better english dictionary, freely usable for AI programming in common lisp. The other objective was exploring the field of natural language parsing, building a parser for standard english sentences.
+
+** The English Grammar Dictionary
+At the beginning of the project I tried to use the module Basic English Grammar (http://www.cliki.net/Basic-English-Grammar). Although it is a nice starting point for simple experiments it lacks some indispensable relationships between words, and only contains ~10000 not unique words (i.e. the conjugations of verbs are counted, etc...).
+
+I built a new /English Grammar dictionary/ exploiting the niceties of the prolog language to define relationships between words. As a reference I used the Webster Unabridged Dictionary from Project Gutenberg (http://www.gutenberg.org/ebooks/673).
+This dictionary is no longer covered by copyrights and contains about _110000 unique words_ (i.e. plurals, conjugations are _not_ counted), more than ten times larger Basic English Grammar.
+
+In addition some useful grammar's relationships:
+1) *Verbs* are marked as *intransitive* or *transitive* and are linked to their *imperfect*, *past participle*, *verbal noun* and *-ing* forms.
+2) *Nouns* are linked to their *irregular plurals*.
+3) *Adjectives* are linked to their *comparative* and *superlative* forms.
+4) The dictionary includes *pronouns*, *adverbs* and *prepositions*.
+
+Since the dictionary is simply a text file containing prolog facts it can be easily reformatted to be used with other programming languages.
+
+** The Natural Language Parser
+This part of the project is an experiment I used to improve my knowledge of linguistics and natural language processing.
+
+The prolog-tlk.lisp file contais an english sentence parser (TODO...)
+
+* Further Reading
+
+An excellent tutorial to familiarize with NLP is: Natural Language Processing Techniques in Prolog by Patrick Blackburn and Kristina Striegnitz (http://cs.union.edu/~striegnk/courses/nlp-with-prolog/html/).
+I used their tutorial as a starting point for this project.
+
+If you also want to add semantic knowledge about the language to your program, some courses about Computational Semantics are available at http://www.let.rug.nl/bos/comsem/.

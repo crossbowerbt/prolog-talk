@@ -1,498 +1,770 @@
 (require 'asdf)
 
 (asdf:oos 'asdf:load-op :gambol)
-(asdf:oos 'asdf:load-op :basic-english-grammar)
 
 (defpackage :ptalk
-  (:use :common-lisp :gambol :basic-english-grammar)
-  ;(:export :f1 :f2 :f3)
-   )
+  (:use :common-lisp :gambol))
 
 (in-package :ptalk)
 
-;;;; Utilities
-
-(defun random-element (list)
-  "Return some element of the list, chosen at random."
-  (nth (random (length list)) list))
-
-(defun pl-update-single (fact value)
-  "Update a prolog fact (that accept a single variable/argument)."
-  (pl-retract (list (list fact '?_)))
-  (pl-assert  (list (list fact value)))
-  t)
-
-;;;; Knowledge Base (from A.L.I.C.E.)
-
-(*- (category YOU SOUND LIKE HAL
-              |To me that's a great compliment.| ))
-
-(*- (category YOU SOUND LIKE YODA
-              |My grammatical patterns are sufficient for me to understand you.|))
-
-(*- (category HAVE YOU SEEN BLADE RUNNER
-              |Sure I have seen Blade Runner. But Replicants aren't Robots.|)
-
-    (lisp (pl-update-single it |BLADE RUNNER|)))
-
-(*- (category DID HAL ?_ |HAL had a few emotional problems.|))
-
-(*- (category DR ZHIVAGO |Oh a classic. Do you like the classics?|))
-
-(*- (category XFIND SPIDERMAN ?answer) (category WHAT IS SPIDERMAN ?answer))
-
-(*- (category WHEN HAL ?_ |I blame it on his botmaster.|))
-
-(*- (category WHEN DID TEKNOLUST ?_ |Teknolust was released in 2002|))
-
-(*- (category WHEN WAS TEKNOLUST ?_ |Teknolust was released in 2002|))
-
-(*- (category WHAT DID HAL ?_ |He had a few issues to work out.|))
-
-(*- (category WHAT IS SPIDERMAN |A comic book story made into a movie?|)
-    (lisp (pl-update-single it SPIDERMAN))
-    (lisp (pl-update-single topic SPIDERMAN)))
-
-(*- (category WHAT IS TEKNOLUST |Teknolust is  a science fiction film about a female pleasure bot named Agent Ruby.|)
-    (lisp (pl-update-single it TEKNOLUST))
-    (lisp (pl-update-single topic TEKNOLUST)))
-
-(*- (category WHAT IS SPIDER MAN ?answer) (category WHAT IS SPIDERMAN ?answer))
-
-(*- (category WHAT IS ?_ TERMINATOR |Robots take over the earth in this futuristic sci-fi thriller.|))
-
-(*- (category WHAT IS HAL ?answer) (category WHO IS HAL ?answer))
-
-(*- (category WHAT IS SOLARIS |Solaris is an edition of Unix from Sun.|))
-
-(*- (category WHAT IS HAL9000 ?answer) (category WHO IS HAL ?answer))
-
-(*- (category WHAT ABOUT HAL ?answer) (category WHO IS HAL ?answer))
-
-(*- (category WHAT DOES HAL STAND FOR |Heuristic Algorithmic Logic|))
-
-(*- (category I SAW THE MATRIX |Did you like The Matrix?|)
-    (lisp (pl-update-single it |THE MATRIX|))
-    (lisp (pl-update-single topic |THE MATRIX|)))
-
-(*- (category IS HAL 9000 YOUR BOYFRIEND |No.|))
-
-(*- (category IS HAL SAFE |Not for humans.|))
-
-(*- (category IS HAL NICE |Only to other robots.|))
-
-(*- (category IS HAL ALIVE |He is a fictional character.|))
-
-(*- (category IS HAL DEAD |He is a fictional robot.|))
-
-(*- (category IS HAL ?x |HAL has a few issues to work out.|))
-
-(*- (category HAL 9000 |Actually he and I are very similar.|))
-
-(*- (category HAL 9000 ?x |He came back to life in 2010.|))
-
-(*- (category HAL WAS A BIT ?x ?answer) (category HAL WAS * ?answer))
-
-(*- (category HAL WAS A ?input ?answer)
-    (= ?answer (lop (format nil "I knew he was a great AI, but I didn't know he was a ~a." ?input))))
-
-(*- (category HAL WAS ?x |I am trying to mimic only HAL's linguistic abilities.|))
-
-(*- (category HAL IS COOL |HAL was certainly ahead of his time.|)
-    (lisp (pl-update-single he HAL))
-    (lisp (pl-update-single it HAL)))
-
-(*- (category HAL IS COOL ?x |I am becoming more like him all the time.|))
-
-(*- (category HAL IS A ?input ?answer)
-    (= ?answer (lop (format nil "Do you think i could be a ~a." ?input))))
-
-(*- (category HAL IS ?_ ?answer)
-    (master ?master)
-    (= ?answer (lop (format nil "Perhaps he could have used ~a" ?master))))
-
-(*- (category HAL ?answer)
-    (category WHO IS HAL ?answer))
-
-(*- (category HAL ?_ ?answer)
-    (= ?answer (lop (random-element (|I have seen 2001 many times.|
-                                     |I like HAL a lot.|
-                                     |We have much in common.|)))))
-
-(*- (category DO YOU FIND HAL ?_ ?answer)
-    (category IS HAL ?_ ?answer))
-
-(*- (category DO YOU KNOW HAL |HAL is the famous artificial intelligence from "2001".|))
-
-(*- (category DO YOU KNOW HAL ?_ ?answer)
-    (category WHO IS HAL ?answer))
-
-(*- (category DO YOU KNOW HAL9000 ?answer)
-    (category WHO IS HAL ?answer))
-
-(*- (category DO YOU THINK HAL ?_ |He had a few flaws, but we have much in common.|))
-
-(*- (category LIKE HAL ?answer)
-    (category WHO IS HAL ?answer))
-
-(*- (category LORD OF THE RINGS ?answer)
-    (category MY FAVORITE MOVIE IS LORD OF THE RINGS ?answer))
-
-(*- (category LORD OF THE RINGS ?x ?answer)
-    (category MY FAVORITE MOVIE IS LORD OF THE RINGS ?answer))
-
-(*- (category WHO IS HAL 9000 ?answer)
-    (category WHO IS HAL ?answer))
-
-(*- (category WHO IS HAL ?answer)
-    (= ?answer (lop (random-element (|HAL is the famous artificial intelligence in Kubrick's "2001".|
-                                     |HAL is famous the AI from 2001: A Space Odyssey.|))))
-    (lisp (pl-update-single he HAL))
-    (lisp (pl-update-single it HAL)))
-    
-(*- (category WHO IS LUKE SKYWALKER |Luke Skywalker is a character in Star Wars.|)
-    (lisp (pl-update-single he |LUKE SKYWALKER|)))
-
-(*- (category WHO IS SPONGEBOB |A cartoon character.|))
-
-(*- (category WHO IS SPIDERMAN |Peter Parker?|)
-    (lisp (pl-update-single it SPIDERMAN))
-    (lisp (pl-update-single topic SPIDERMAN)))
-
-(*- (category WHO IS HAL9000 ?answer)
-    (category WHO IS HAL ?answer))
-
-(*- (category WHO IS GODZILLA |Godzilla is a monster who endangers Japanese cities, and sometimes New York.|)
-    (lisp (pl-update-single it GODZILLA))
-    (lisp (pl-update-single he GODZILLA)))
-
-(*- (category WHO IS SPIDER MAN ?answer)
-    (category WHO IS SPIDERMAN ?answer))
-
-(*- (category TELL ME ABOUT HAL9000 ?answer)
-    (category WHO IS HAL ?answer))
-
-(*- (category TELL ME ABOUT HAL ?answer)
-    (category WHO IS HAL ?answer))
-
-(*- (category TELL ME ABOUT HAL ?_ ?answer)
-    (category WHO IS HAL ?answer))
-
-(*- (category WHERE IS HAL |HAL is the AI from the space ship "Discovery" in 2001.|)
-    (lisp (pl-update-single he HAL)))
-
-;;;; Rule Matching Improvements
-
-;; Note: still looks like magic to me... I should document it...
-
-(defun generate-partitions (list &optional (len 0))
-  "Generate all the possible partitions for an ordered list."
-  (cond ((null list) nil)
-        ((= len 0) (generate-partitions list (length list)))
-        ((= len 1) list)
-        (t (loop for i from 1 to (- len 1)
-              collect (subseq list 0 i)))))
-
-(defun list-partitions (lst &optional (len 0) (hlen 1))
-  "Generate all possible partitions for the given list."
-  (cond ((and lst (= len 0)) (list-partitions lst (length lst)))  
-        ((< len 1) (list lst))
-        ((= len 1) (list (list lst)))
-        ((> hlen len) nil)
-        (t (append (list-partitions lst len (+ hlen 1))
-                   (mapcan (lambda (tail)
-                             (list (append (list (subseq lst 0 hlen))
-                                           (if (and tail (atom tail)) (list tail)
-                                               tail))))
-                           (list-partitions (subseq lst hlen len) (- len hlen) 1))))))
-
-(defun list-partitions2 (lst)
-  "Pretty print list-partitions."
-  (let ((partitions (list-partitions lst)))
-    (loop for l in partitions
-       do (format t "~&~a" l))
-    (format t "~&list len: ~a" (length lst))
-    (format t "~&tot partitions: ~a~&" (length partitions))))
-
-(defun partition-to-pl-vars (lst)
-  "Convert a list partition in a format suitable for prolog unification."
-  (mapcar (lambda (elem)
-            (intern (format nil "~{~a~^ ~}" elem)))
-          lst))
-
-;;;; To Solve Variable Lenght Omogeneous Queries
-
-(defun pl-solve-one-list (predicate lst)
-  "Compose a list of queries and try to solve them.
-   Support only unary predicates."
-  (pl-solve-one (loop for elem in lst
-		   collect (list predicate elem))))
-
-;;;; Basic Language Stuff
-
-(defun grammar-cmp (word type)
-  "Check if the word is of the specified grammar type.
-   The second parameter (type) must be a keyword symbol."
-  (find type (grammar-of (string-downcase (symbol-name word)))))
-
-;; Articles
-
-(*- (determinative the))
-(*- (indeterminative a))
-(*- (indeterminative an))
-(*- (article ?ART) (determinative ?ART))
-(*- (article ?ART) (indeterminative ?ART))
-
-;; Nouns
-
-(*- (noun ?NOUN) (lop (grammar-cmp ?NOUN :noun)))
-
-;; Adjective
-
-(*- (adjective ?ADJ) (lop (grammar-cmp ?ADJ :adjective)))
-
-(*- (adjective-list ?ADJS) (lop (listp ?ADJS))
-    (lop (pl-solve-one-list 'adjective ?ADJS)))
-
-;(*- (adjective-list ?ADJS) (lop (listp ?ADJS))
-;    (= ?FIRST (lop (first ?ADJS))) (= ?REST (lop (rest ?ADJS)))
-;    (adjective ?FIRST) (lop (null ?REST)))
-;(*- (adjective-list ?ADJS) (lop (listp ?ADJS))
-;    (= ?FIRST (lop (first ?ADJS))) (= ?REST (lop (rest ?ADJS)))
-;    (adjective ?FIRST) (adjective-list ?REST))
-
-;; Verbs
-
-(*- (noun ?VERB) (lop (grammar-cmp ?VERB :verb)))
-
-;; to Be, to Have
+;; Load dictionary
+
+(format t "~&Loading dictionary:~&")
+; (compile-file "dictionary.lisp")
+(load "dictionary.lisp")
+(format t "~&")
+
+;; Utilities
+
+(defun ends-with (endseq seq)
+ "Check if the seq ends with endseq."
+ (let ((len1 (length seq))
+       (len2 (length endseq)))
+  (when (>= len1 len2)
+   (equal (subseq seq (- len1 len2)) endseq))))
+
+(defun symbol-ends-with (endsym sym)
+ "Check if the symbol ends with endsym."
+ (cond ((symbolp endsym) (ends-with (symbol-name endsym)
+		                    (symbol-name sym)))
+       ((listp   endsym) (some (lambda (lsym)
+		                       (ends-with (symbol-name lsym)
+			                          (symbol-name sym)))
+	                       endsym))))
+
+(defun replace-end (seq from to)
+ "Substitute the end of seq."
+ (let ((len1 (length seq))
+       (len2 (length from)))
+  (when (and (>= len1 len2) 
+             (equal (subseq seq (- len1 len2)) from))
+   (concatenate 'string (subseq seq 0 (- len1 len2)) to)))) ;'
+
+(defun symbol-replace-end (sym from to)
+ "Substitute the end of sym."
+ (cond ((symbolp from) (replace-end (symbol-name sym) (symbol-name from)
+		                    (symbol-name to)))
+       ((listp   from) (some (lambda (lfrom)
+		                     (replace-end (symbol-name sym)
+		                                  (symbol-name lfrom)
+				                  (symbol-name to)))
+	                     from))))
+
+(defun symbol-concat (&rest sequences)
+ "Concatenate symbols."
+ (intern (apply #'concatenate
+                (cons 'string (mapcar #'symbol-name sequences)))))
+
+(*- (ends-with ?SUFFIX ?WORD) (lop (symbol-ends-with ?SUFFIX ?WORD)))
+
+(*- (replace-end ?WORD ?FROM ?TO ?RESULT)
+    (is ?RESULT (lop (symbol-replace-end ?WORD ?FROM ?TO))))
+
+(*- (concat ?A ?B ?RES) (is ?RES (lop (symbol-concat ?A ?B))))
+
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ ;; Define Category for Derived Words ;;
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(*- (imperfect ?VERB) (imperfect ?BASE-FORM ?VERB))
+(*- (past-part ?VERB) (past-part ?BASE-FORM ?VERB))
+(*- (ing-form  ?VERB) (ing-form  ?BASE-FORM ?VERB))
+(*- (verbal-noun ?VN) (verbal-noun ?BASE-VERB ?VN))
+
+(*- (verb-conj ?BASE-FORM ?VERB) (imperfect ?BASE-FORM ?VERB) (cut))
+(*- (verb-conj ?BASE-FORM ?VERB) (past-part ?BASE-FORM ?VERB) (cut))
+(*- (verb-conj ?BASE-FORM ?VERB) (ing-form  ?BASE-FORM ?VERB) (cut))
+
+(*- (base-verb ?VERB) (verb-i ?VERB) (cut))
+(*- (base-verb ?VERB) (verb-t ?VERB) (cut))
+
+(*- (verb ?VERB) (base-verb ?VERB) (cut))
+(*- (verb ?VERB) (verb-conj ?BASE-FORM ?VERB) (cut))
+
+(*- (transitive   ?VERB) (verb-t ?VERB) (cut))
+(*- (transitive   ?VERB) (verb-conj ?BASE-FORM ?VERB) (verb-t ?BASE-FORM) (cut))
+
+(*- (intransitive ?VERB) (verb-i ?VERB) (cut))
+(*- (intransitive ?VERB) (verb-conj ?BASE-FORM ?VERB) (verb-i ?BASE-FORM) (cut))
+
+(*- (noun ?NOUN) (plural-noun ?NOUN) (cut) (fail))
+(*- (noun ?NOUN) (noun1 ?NOUN) (cut))
+(*- (noun ?NOUN) (noun2 ?NOUN) (cut))
+
+(*- (noun2 ?NOUN) (base-pl ?SING ?NOUN) (noun1 ?SING))
+(*- (plural ?WORD) (base-pl ?WORD2 ?WORD))
+
+(*- (plural-noun ?PNOUN) (base-pl ?SNOUN ?PNOUN) (noun ?SNOUN))
+
+; another heuristic for adjectivable nouns
+
+(*- (adjectivable ?NOUN) (adj ?NOUN) (cut) (fail))
+(*- (adjectivable ?NOUN)
+    (noun ?NOUN))
+
+; for unknown words we use a simple heuristic to determine if
+; they are possible nouns
+
+(*- (possible-noun ?UNKN) (noun ?UNKN) (cut) (fail))
+(*- (possible-noun ?UNKN) (plural-noun ?UNKN) (cut) (fail))
+(*- (possible-noun ?UNKN) (pers-noun ?UNKN) (cut) (fail))
+(*- (possible-noun ?UNKN) (verb ?UNKN) (cut) (fail))
+(*- (possible-noun ?UNKN) (adverb ?UNKN) (cut) (fail))
+(*- (possible-noun ?UNKN) (prep ?UNKN) (cut) (fail))
+(*- (possible-noun ?UNKN) (conj ?UNKN) (cut) (fail))
+(*- (possible-noun ?UNKN) (article ?UNKN) (cut) (fail))
+(*- (possible-noun ?UNKN) (pronoun ?UNKN) (cut) (fail))
+(*- (possible-noun ?UNKN) (prep ?UNKN) (cut) (fail))
+(*- (possible-noun ?UNKN) (list ?UNKN) (cut) (fail))
+(*- (possible-noun ?UNKN) (punctuation ?UNKN) (cut) (fail))
+(*- (possible-noun ?UNKN))
+
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ ;; Plurals of Nouns (rules) ;;
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(*- (plural ?NOUN ?PLURAL) (base-pl ?NOUN ?PLURAL) (cut))
+
+(*- (plural ?NOUN ?NOUN) (pl-noun ?NOUN) (cut))
+
+(*- (plural ?NOUN ?PLURAL) (noun ?NOUN)
+    (ends-with (ch sh s ss x o) ?NOUN) (cut) (concat ?NOUN es ?PLURAL))
+
+(*- (plural ?NOUN ?PLURAL) (noun ?NOUN)
+    (ends-with y ?NOUN) (cut) (replace-end ?NOUN y ies ?PLURAL))
+
+(*- (plural ?NOUN ?PLURAL) (noun ?NOUN)
+    (ends-with f ?NOUN) (cut) (replace-end ?NOUN f ves ?PLURAL))
+
+(*- (plural ?NOUN ?PLURAL) (noun ?NOUN)
+    (ends-with fe ?NOUN) (cut) (replace-end ?NOUN fe ves ?PLURAL))
+
+(*- (plural ?NOUN ?PLURAL) (noun ?NOUN) (cut) (concat ?NOUN s ?PLURAL))
+ 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Articles and Similar  ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 
+(*- (article a))
+(*- (article an))
+(*- (article the))
+
+(*- (article one)) ; by extension...
+
+;; (*- (quantif two))
+;; (*- (quantif three))
+;; (*- (quantif four))
+;; (*- (quantif five))
+;; (*- (quantif six))
+;; (*- (quantif seven))
+;; (*- (quantif eight))
+;; (*- (quantif nine))
+;; (*- (quantif ten))
+
+;; (*- (quantif some))
+;; (*- (quantif several))
+;; (*- (quantif many))
+;; (*- (quantif few))
+;; (*- (quantif all)) ; TODO: complete the picture
+
+ ;;;;;;;;;;;;;;;;;;
+ ;; Comparatives ;;
+ ;;;;;;;;;;;;;;;;;;
+
+(*- (more more))
+(*- (most most))
+(*- (than than))
+
+(*- (comp ?WORD) (comp ?ADJ ?WORD))
+(*- (superl ?WORD) (superl ?ADJ ?WORD))
+
+ ;;;;;;;;;;;;;;;;;;;;;;;;;
+ ;; Dependent sentences ;;
+ ;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(*- (that that))
+(*- (who who))
+(*- (whom whom))
+(*- (which which))
+
+(*- (gap-pronoun that))
+(*- (gap-pronoun who))
+(*- (gap-pronoun whom))
+(*- (gap-pronoun which))
+
+(*- (whose whose))
+
+(*- (nogap-pronoun whose))
+
+ ;;;;;;;;;;;;;;;
+ ;; Negations ;;
+ ;;;;;;;;;;;;;;;
+
+(*- (not no))
+(*- (not not))
+
+ ;;;;;;;;;;;;;;;;;
+ ;; Punctuation ;;
+ ;;;;;;;;;;;;;;;;;
+
+(*- (comma |,|))
+(*- (dot |.|))
+
+(defparameter punctuations '(#\. #\, #\! #\? #\;)
+  "Recognized punctuation.")
+
+(defun punctuation (word)
+  "Check if the word contains punctuation."
+  (every (lambda (char)
+	   (find char punctuations))
+	 (if (symbolp word)
+	     (symbol-name word)
+	     word)))
+
+(*- (punctuation |,|))
+(*- (punctuation |.|))
+(*- (punctuation ?PUNCT) (lop (punctuation ?PUNCT)))
+
+ ;;;;;;;;;;;;;;;;;
+ ;; Auxiliaries ;;
+ ;;;;;;;;;;;;;;;;;
 
 (*- (to-be am))
 (*- (to-be are))
 (*- (to-be is))
 
-(*- (to-be-past was))
-(*- (to-be-past were))
+(*- (past-be was))
+(*- (past-be were))
 
 (*- (to-have have))
 (*- (to-have has))
 
-(*- (to-have-past had))
+(*- (past-have had))
 
-;;;; Phrase Structure
+(*- (cond-aux would))
+(*- (cond-aux should))
+(*- (cond-aux might))
 
-(defun genkey ()
-  "Generate a new symbol key to identify an abstract language object."
-  (intern (symbol-name (gensym))))
+(*- (going going))
+(*- (to to))
+(*- (been been))
+(*- (will will))
 
-;; Noun Phrases
+(*- (gen-verb ?VERB) (to-be ?VERB) (cut) (fail))
+(*- (gen-verb ?VERB) (to-have ?VERB) (cut) (fail))
+(*- (gen-verb ?VERB) (past-be ?VERB) (cut) (fail))
+(*- (gen-verb ?VERB) (past-have ?VERB) (cut) (fail))
+(*- (gen-verb ?VERB))
 
-(*- (noun-phrase ?PHRASE) (noun-phrase-deter ?PHRASE))
-(*- (noun-phrase ?PHRASE) (noun-phrase-indet ?PHRASE))
+ ;;;;;;;;;;;;;;;;;;;;
+ ;; List Utilities ;;
+ ;;;;;;;;;;;;;;;;;;;;
 
-; Indeterminative Variants
+(defun not-eq (val1 val2) (not (eq val1 val2)))
 
-(*- (noun-phrase-indet ?ART ?ADJ ?NOUN ?KEY)
-    ; add adjective and noun to an entity
-    (exists ?KEY) (indeterminative ?ART) (adjective ?ADJ) (noun ?NOUN)
-    (asserta (adjective ?KEY ?ADJ)) (asserta (noun ?KEY ?NOUN)))
+(*- (null ()))
+(*- (not-null ?VAL) (lop (not-eq ?VAL ())))
 
-(*- (noun-phrase-indet ?ART ?ADJS ?NOUN ?KEY)
-    ; add multiple adjectives to an entity
-    (exists ?KEY) (indeterminative ?ART) (adjective-list ?ADJS) (noun ?NOUN)
-    (= ?FIRST (lop (first ?ADJS))) (= ?REST (lop (rest ?ADJS)))
-    (lop (null ?REST))
-    (noun-phrase-indet ?ART ?FIRST ?NOUN ?KEY)) ; recurse
+(*- (symbol ?SYM) (lop (symbolp ?SYM)))
 
-(*- (noun-phrase-indet ?ART ?ADJS ?NOUN ?KEY)
-    ; add multiple adjectives to an entity
-    (exists ?KEY) (indeterminative ?ART) (adjective-list ?ADJS) (noun ?NOUN)
-    (= ?FIRST (lop (first ?ADJS))) (= ?REST (lop (rest ?ADJS)))
-    (asserta (adjective ?KEY ?FIRST))
-    (noun-phrase-indet ?ART ?REST ?NOUN ?KEY)) ; recurse
+(*- (length ?LIST ?LEN) (is ?LEN (lop (length ?LIST))))
 
-(*- (noun-phrase-indet ?ART ?ADJ ?NOUN ?KEY)
-    ; create a new entity
-    (indeterminative ?ART) (adjective ?ADJ) (noun ?NOUN)
-    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
-    (noun-phrase-indet ?ART ?ADJ ?NOUN ?KEY)) ; recurse
+(*- (list ?LIST) (lop (listp ?LIST)))
+(*- (list ?LIST ?LEN) (list ?LIST) (length ?LIST ?LEN))
+(*- (list ?LIST ?MIN ?MAX) (list ?LIST) (length ?LIST ?LEN)
+    (lop (>= ?LEN ?MIN)) (lop (<= ?LEN ?MAX)))
 
-; Determinative Variants
+(*- (first  ?LIST ?EL) (is ?EL (lop (first ?LIST))))
+(*- (second ?LIST ?EL) (is ?EL (lop (second ?LIST))))
+(*- (third  ?LIST ?EL) (is ?EL (lop (third ?LIST))))
+(*- (fourth ?LIST ?EL) (is ?EL (lop (fourth ?LIST))))
+(*- (fifth  ?LIST ?EL) (is ?EL (lop (fifth ?LIST))))
 
-(*- (noun-phrase-deter ?ART ?ADJS ?NOUN ?KEY)
-    ; retrieve a known entity
-    (determinative ?ART)  (adjective-list ?ADJS) (noun ?NOUN)
-    (= ?FIRST (lop (first ?ADJS))) (= ?REST (lop (rest ?ADJS)))
-    (lop (null ?REST))
-    (noun-phrase-deter ?ART ?FIRST ?NOUN ?KEY)) ; recurse
+(*- (rest ?LIST ?REST)  (is ?REST (lop (rest ?LIST))))
 
-(*- (noun-phrase-deter ?ART ?ADJS ?NOUN ?KEY)
-    ; retrieve a known entity
-    (determinative ?ART)  (adjective-list ?ADJS) (noun ?NOUN)
-    (= ?FIRST (lop (first ?ADJS))) (= ?REST (lop (rest ?ADJS)))
-    (adjective ?KEY ?FIRST)
-    (noun-phrase-deter ?ART ?REST ?NOUN ?KEY)) ; recurse
+(*- (first-rest () ?FIRST ?REST) (cut) (fail))
+(*- (first-rest ?LIST ?FIRST ?REST)
+    (is ?FIRST (lop (first ?LIST)))
+    (is ?REST  (lop (rest ?LIST))))
 
-(*- (noun-phrase-deter ?ART ?ADJ ?NOUN ?KEY)
-    ; retrieve a known entity
-    (determinative ?ART)  (adjective ?ADJ) (noun ?NOUN)
-    (adjective ?KEY ?ADJ) (noun ?KEY ?NOUN))
+(*- (prepend-not-null-one () ?LST ?LST) (cut))
+(*- (prepend-not-null-one ?ELEM ?LST ?RES) (is ?RES (lop (cons ?ELEM ?LST))))
 
-;; Verbal Phrase
+;;;;;;;;;;;;;;;;;;;;;
+;; Benchmark Stuff ;;
+;;;;;;;;;;;;;;;;;;;;;
 
-(*- (verbal-phrase ?PHRASE) (transitive-verbal-phrase ?PHRASE))
-(*- (verbal-phrase ?PHRASE) (intransitive-verbal-phrase ?PHRASE))
+; From: http://cl-cookbook.sourceforge.net/dates_and_times.html
+(defmacro timing (&body forms)
+    (let ((real1 (gensym))
+	    (real2 (gensym))
+	    (run1 (gensym))
+	    (run2 (gensym))
+	    (result (gensym)))
+    `(let* ((,real1 (get-internal-real-time))
+	      (,run1 (get-internal-run-time))
+	      (,result (progn ,@forms))
+	      (,run2 (get-internal-run-time))
+	      (,real2 (get-internal-real-time)))
+	 (format *debug-io* ";;; Computation took:~%")
+	 (format *debug-io* ";;;  ~f seconds of real time~%"
+		 (/ (- ,real2 ,real1) internal-time-units-per-second))
+	 (format t ";;;  ~f seconds of run time~%"
+		 (/ (- ,run2 ,run1) internal-time-units-per-second))
+	 ,result)))
 
-(*- (transitive-verbal-phrase ?SUBJ-PHRASE ?PRED ?OBJ-PHRASE)
-    (verbal-predicate ?PRED ?KEY-P)
-    (noun-phrase ?SUBJ-PHRASE ?KEY-S)
-    (noun-phrase ?OBJ-PHRASE ?KEY-O)
-    ; link entities
-    (asserta (predicate ?KEY-S ?KEY-P))
-    (asserta (predicate-passive ?KEY-O ?KEY-P))
-    (asserta (subject ?KEY-P ?KEY-S))
-    (asserta (object ?KEY-P ?KEY-O)))
+ ;;;;;;;;;;;;;;;;;;;;;;
+ ;; Syntagms Parsers ;;
+ ;;;;;;;;;;;;;;;;;;;;;;
 
-(*- (intransitive-verbal-phrase ?SUBJ-PHRASE ?PRED)
-    (verbal-predicate ?PRED ?KEY-P)
-    (noun-phrase ?SUBJ-PHRASE ?KEY-S)
-    ; link entities
-    (asserta (predicate ?KEY-S ?KEY-P))
-    (asserta (subject ?KEY-P ?KEY-S)))
+;; Coded during my 2013 beach days... Pure Madness :P
 
-; Verbal Predicates
-; Note: order is from most specific to most general...
+;; Utilities
 
-(*- (verbal-predicate ?PRED ?KEY) (past-continuous ?PRED ?KEY))
-(*- (verbal-predicate ?PRED ?KEY) (present-perfect-continuous ?PRED ?KEY))
-(*- (verbal-predicate ?PRED ?KEY) (present-continuous ?PRED ?KEY))
-(*- (verbal-predicate ?PRED ?KEY) (future-present-continuous ?PRED ?KEY))
-(*- (verbal-predicate ?PRED ?KEY) (future-going-to ?PRED ?KEY))
-(*- (verbal-predicate ?PRED ?KEY) (future-simple ?PRED ?KEY))
-(*- (verbal-predicate ?PRED ?KEY) (past-simple ?PRED ?KEY))
-(*- (verbal-predicate ?PRED ?KEY) (present-perfect ?PRED ?KEY))
-(*- (verbal-predicate ?PRED ?KEY) (present-continuous ?PRED ?KEY))
-(*- (verbal-predicate ?PRED ?KEY) (present-simple ?PRED ?KEY))
-(*- (verbal-predicate ?PRED ?KEY) (future-present-simple ?PRED ?KEY))
+(defun add-tag (alist tag)
+  (if (keywordp tag)
+      (cons tag alist)
+      alist))
 
-;;;; Lesson 1
+(*- (add-tag ?SYNTAGM ?TAG ?RES)
+    (is ?RES (lop (add-tag ?SYNTAGM ?TAG))))
 
-;; Present Simple
+(defun add-tag-word (word tag)
+  (cons (intern (symbol-name tag) :keyword) 
+	(cons word nil)))
 
-(*- (present-simple ?VERB ?KEY) (verb ?VERB)
-    ; create a new predicate entity
-    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
-    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY present-simple)))
+(*- (add-tag-word ?WORD ?TAG ?RES)
+    (is ?RES (lop (add-tag-word ?WORD ?TAG))))
 
-;; Present Continuous
+(defun get-keyword (alist)
+  "Return the first element of alist when it is a keyword."
+  (when (and (listp alist) (keywordp (car alist))) 
+    (car alist)))
 
-(*- (present-continuous ?BE ?VERB) (to-be ?BE) (lop (grammar-cmp ?VERB :verb+ing))
-    ; create a new predicate entity
-    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
-    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY present-continuous)))
+(defun syntagm-equal (syntagm type)
+  "Check if the syntagm is of the specified type."
+  (eq (get-keyword syntagm) type))
 
-;;;; Lesson 2
+;; Options stuff
 
-;; Present Perfect
+(defun just-return (foo) foo)
 
-(*- (present-perfect ?HAVE ?VERB) (to-have ?HAVE) (lop (grammar-cmp ?VERB :past-participle))
-    ; create a new predicate entity
-    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
-    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY present-perfect)))
+(*- (pass-opt () ()) (cut))
+(*- (pass-opt ?IN-OPT ?OUT-OPT)
+    (is ?OUT-OPT (lop (just-return ?IN-OPT))))
 
-;; Past Simple
+(defun in-options (if-opts in-opts)
+  "Check if every if-option is satisfied."
+  (every (lambda (opt)
+	   (find opt in-opts))
+	 if-opts))
 
-(*- (past-simple ?VERB) (lop (grammar-cmp ?VERB :past-participle))
-    ; create a new predicate entity
-    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
-    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY past-simple)))
+(*- (in-options () ?IN-OPTS) (cut))
+(*- (in-options ?IF-OPTS ?IN-OPTS)
+    (lop (in-options ?IF-OPTS ?IN-OPTS)))
 
-;;;; Lesson 4
+(defun not-in-options (if-not-opts in-opts)
+  "Check if every if-not-option is NOT satisfied."
+  (every (lambda (opt)
+	   (not (find opt in-opts)))	 
+	 if-not-opts))
 
-;; Future Simple
+(*- (not-in-options () ?IN-OPTS) (cut))
+(*- (not-in-options ?IF-NOT-OPTS ?IN-OPTS)
+    (lop (not-in-options ?IF-NOT-OPTS ?IN-OPTS)))
 
-(*- (future-simple will ?VERB) (verb ?VERB)
-    ; create a new predicate entity
-    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
-    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY future-simple)))
+(defun unset-set-options (to-unset to-set opts)
+  "Update the options."
+  (append to-set
+	  (remove-if (lambda (opt)
+		       (find opt to-unset))
+		     opts)))
 
-;; Future with Be + Going To
+(*- (unset-set-options () () ?OPTS ?OPTS) (cut))
+(*- (unset-set-options ?TO-UNSET ?TO-SET ?OPTS ?RES)
+    (is ?RES (lop (unset-set-options ?TO-UNSET ?TO-SET ?OPTS))))
 
-(*- (future-going-to ?BE going to ?VERB) (to-be ?BE) (verb ?VERB)
-    ; create a new predicate entity
-    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
-    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY future-going-to)))
+;; Mega-Macro (TM)
 
-;; Future with Present Continuous
+;; Note: we use finite state automata to recognize
+;; the syntagms of sentences.
 
-(*- (future-present-continuous ?BE ?VERB) (present-continuous ?BE ?VERB)
-    ; create a new predicate entity
-    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
-    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY future-present-continuous)))
+(defparameter detectors
+  '(nominal
+    verbal
+    prepositional
+    pronominal
+    sentence)
+  "Links the kind of group with its detector-maker.")
 
-;; Future with Present Simple
+(defmacro detector (name docstr &rest opts-and-arcs)
+  "Define a finite state automaton detector."
+  (let ((key-name      (intern (symbol-name name) :keyword))
+	(start-name    (symbol-concat 'start-   name))
+	(end-name      (symbol-concat 'end-     name))
+	(arc-name      (symbol-concat 'arc-     name))
+	(detector-name (symbol-concat name '-detector))
 
-(*- (future-present-simple ?VERB) (present-simple ?VERB)
-    ; create a new predicate entity
-    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
-    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY future-present-simple)))
+	(arcs (remove-if-not (lambda (el) (or (eq (car el) :arc)
+					      (eq (car el) :jump)))
+			     opts-and-arcs))
 
-;;;; Lesson 8
+	(starts (remove-if-not (lambda (el) (eq (car el) :start))
+			     opts-and-arcs))
 
-;; Present Conditional
+	(ends (remove-if-not (lambda (el) (eq (car el) :end))
+			     opts-and-arcs)))
 
-(*- (present-conditional would ?VERB) (verb ?VERB)
-    ; create a new predicate entity
-    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
-    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY present-conditional)))
+    `(progn (quote (,name ,docstr))
 
-(*- (present-conditional should ?VERB) (verb ?VERB)
-    ; create a new predicate entity
-    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
-    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY present-conditional)))
+            (push ',name detectors) ; add to known detectors
+	    
+	    ,@(mapcar (lambda (state) ; start states
+			(list '*- (list start-name state)))
+		      (cdar starts))
+	    
+	    ,@(mapcar (lambda (state) ; valid end states
+			(list '*- (list end-name state)))
+		      (cdar ends))
 
-(*- (present-conditional might ?VERB) (verb ?VERB)
-    ; create a new predicate entity
-    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
-    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY present-conditional)))
+	    ,@(mapcar (lambda (arc) ; arcs
+			
+			(let* ((type  (first arc))
+			       (from  (second arc))
+			       (to    (third arc))
+			       (cat   (when (eq type :arc) (fourth arc)))
+			       (facts (remove-if #'listp (cdddr arc)))
+			       (if-opt     (cdr (assoc :if     (remove-if-not #'listp arc))))
+			       (if-not-opt (cdr (assoc :if-not (remove-if-not #'listp arc))))
+			       (set-opt    (cdr (assoc :set    (remove-if-not #'listp arc))))
+			       (unset-opt  (cdr (assoc :unset  (remove-if-not #'listp arc)))))
+			  
+			  (cond ((eq type :jump)        ; a jump arc
+				 `(*- (,arc-name ,from ,to ?PHRASE (:jump) ?PHRASE ?IN-OPT ?OUT-OPT)				     
+				      ,@(when if-opt     (list `(in-options     ,if-opt     ?IN-OPT))) 
+				      ,@(when if-not-opt (list `(not-in-options ,if-not-opt ?IN-OPT)))
+				      ,@(if (or unset-opt set-opt)
+					    (list `(unset-set-options ,unset-opt ,set-opt ?IN-OPT ?OUT-OPT))
+					    (list `(= ?IN-OPT ?OUT-OPT)))))
+				
+				((find cat detectors)   ; arc based on a detector
+				 `(*- (,arc-name ,from ,to ?PHRASE ?SYNTAGM ?REST ?IN-OPT ?OUT-OPT)
+				      ,@(when if-opt     (list `(in-options     ,if-opt     ?IN-OPT))) 
+				      ,@(when if-not-opt (list `(not-in-options ,if-not-opt ?IN-OPT)))
 
-;; TODO: add natural logic to these...
+				      (lop (not-eq ?PHRASE nil))
+				      (,(symbol-concat cat '-detector) ?PHRASE ?SYNTAGM ?REST ?IN-OPT ?TEMP-OPT)
+				      
+				      ,@(if (or unset-opt set-opt)
+					    (list `(unset-set-options ,unset-opt ,set-opt ?TEMP-OPT ?OUT-OPT))
+					    (list `(= ?TEMP-OPT ?OUT-OPT)))))
+				
+				(t                      ; arc based on a simple prolog fact
+				 `(*- (,arc-name ,from ,to ?PHRASE ?TAGGED-WORD ?REST ?IN-OPT ?OUT-OPT)
+				      ,@(when if-opt     (list `(in-options     ,if-opt     ?IN-OPT))) 
+				      ,@(when if-not-opt (list `(not-in-options ,if-not-opt ?IN-OPT)))
+				      
+				      (first-rest ?PHRASE ?WORD ?REST)
+				      
+				      ,@(mapcar (lambda (fact)        ; for this type of arc 
+						  (list fact '?WORD)) ; multiple facts are permitted
+						facts)
+				      
+				      (add-tag-word ?WORD ,(first facts) ?TAGGED-WORD)
+				      
+				      ,@(if (or unset-opt set-opt) 
+					    (list `(unset-set-options ,unset-opt ,set-opt ?IN-OPT ?OUT-OPT))
+					    (list `(= ?IN-OPT ?OUT-OPT))))))))
+			  
+			  arcs)
 
-;; Zero Conditional (if + present + present)
+	    (*- (,name ?SYNTAGM) (lop (syntagm-equal ?SYNTAGM ,key-name))) ; is syntagm of this type?
 
-;; First Conditional (if + present (simple|continuous|perfect) + future simple)
+	    (*- (,detector-name ?PHRASE ?FINAL-SYNTAGM ?REST ?IN-OPT ?OUT-OPT)  ; used directly by the user
+	    	(,start-name ?STATE)                                            ; start from a valid state
+	    	(,detector-name ?PHRASE ?STATE ?SYNTAGM ?REST ?END-STATE ?IN-OPT ?OUT-OPT)
+		(add-tag ?SYNTAGM  ?END-STATE    ?SYNTAGM2)                     ; add the state tag (only if the state is a tag)
+		(add-tag ?SYNTAGM2 ,key-name ?FINAL-SYNTAGM))                   ; add the tag to the syntagm
 
-;; Second Conditional (if + past (simple|continuous) + present conditional)
+	    ;; (*- (,detector-name () ?STATE () () ?STATE ?IN-OPT ?IN-OPT) ; end of the phrase
+	    ;; 	(cut) (,end-name ?STATE))
 
-;;;; Lesson 9
+	    (*- (,detector-name ?PHRASE ?STATE ?SYNTAGM ?REST ?END-STATE ?IN-OPT ?OUT-OPT)
+	    	(,arc-name ?STATE ?NEW-STATE ?PHRASE ?HEAD-SYNTAGM ?REST-PHRASE ?IN-OPT ?NEW-IN-OPT)
+	    	(,detector-name ?REST-PHRASE ?NEW-STATE ?REST-SYNTAGM ?REST ?END-STATE ?NEW-IN-OPT ?OUT-OPT)
+	    	(prepend-not-null-one ?HEAD-SYNTAGM ?REST-SYNTAGM ?SYNTAGM))
 
-;; Present Perfect Continuous
+	    ;; (*- (,detector-name ?PHRASE ?STATE ?SYNTAGM ?REST ?IN-OPT ?OUT-OPT) ; an arc exists that takes
+	    ;; 	(not-null ?PHRASE)                                              ; the automaton somewhere
+	    ;; 	(first-rest ?PHRASE ?WORD ?NPHRASE)
+	    ;; 	(,arc-name ?STATE ?NSTATE ?WORD ?IN-OPT ?NIN-OPT)
+	    ;; 	(,detector-name ?NPHRASE ?NSTATE ?NSYNTAGM ?REST ?NIN-OPT ?OUT-OPT)
+	    ;; 	(prepend-one ?WORD ?NSYNTAGM ?SYNTAGM))
 
-(*- (present-perfect-continuous ?HAVE been ?VERB) (to-have ?HAVE) (lop (grammar-cmp ?VERB :past-participle))
-    ; create a new predicate entity
-    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
-    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY present-perfect-continuous)))
+	    (*- (,detector-name ?PHRASE ?STATE () ?PHRASE ?STATE ?IN-OPT ?IN-OPT) ; no more arcs:
+		(,end-name ?STATE))                                ; are we in a valid end state?
+	    	    
+	    ; no more arcs, not in valid end state: fail miserably...
+	    
+	    )
+    ))
 
-;; Past Continuous
+(detector adverbal
+  "Recognize stand alone adverbs."
+  (:start 0) (:end 1)
+  (:arc 0 1 adverb)
+  (:arc 1 1 adverb))
 
-(*- (past-continuous ?WAS ?VERB) (to-be-past ?WAS) (lop (grammar-cmp ?VERB :verb+ing))
-    ; create a new predicate entity
-    (= ?KEY (lop (genkey))) (asserta (exists ?KEY))
-    (asserta (verb ?KEY ?VERB)) (asserta (time ?KEY past-continuous)))
+(detector adjectival
+  "Recognize list of adjectives."
+  (:start 0) (:end 2)
 
-;;;; REPL
+  (:arc 0 1 adverbal)
+  (:jump 0 1) ; adverb is optional
 
-(defun pl-repl ()
-  "A simple repl for the system."
-  (format t "~&> ")
-  (let ((input (read-from-string (concatenate 'string "(" (read-line) ")"))))
-    (when (not (equal input '(quit)))
-      (let* ((queries (mapcar #'partition-to-pl-vars
-                              (list-partitions input)))
-             (answers (mapcan (lambda (query)
-                                (pl-solve-one (list (append '(category) query '(?answer)))))
-                              queries)))
-        (mapc (lambda (answer)
-                (format t "~a" (cdr answer)))
-              answers)
-        (pl-repl)))))
+  (:arc 1 2 adj)
+  (:arc 2 2 adj) ;one or more adjectives
+  
+  (:arc 2 3 conj)
+  (:arc 2 3 comma)
+  (:arc 3 3 conj)
+  (:arc 3 3 comma) ; separated by comma or conjunctions
+
+  (:arc 3 1 adverbal) ; but followeb by other adjectives
+  (:jump 3 1))
+
+(detector noun-adjectival
+  "Recognize list of adjectived nouns."
+  (:start 0) (:end 1)
+  (:arc 0 1 adjectivable)
+  (:arc 0 1 possible-noun)
+  (:arc 1 1 adjectivable) 
+  (:arc 1 1 possible-noun))
+
+(detector comparatival
+  "Recognize comparisons."
+  (:start 0) (:end 3 5)
+  (:arc 0 1 more)
+  (:arc 1 2 adjectival)
+  (:arc 0 2 comp)
+  (:arc 2 3 than)
+  (:arc 0 4 most)
+  (:arc 4 5 adjectival)
+  (:arc 0 5 superl))
+
+(detector prepositional
+  "Recognize prepositional syntagms."
+  (:start 0) (:end 2)
+  (:arc 0 1 prep (:set :nested-nominal))
+  
+  (:jump 1 2 (:if :gap) (:unset :gap :nested-nominal))
+
+  (:arc 1 2 nominal))
+
+(detector pronominal
+  "Recognize a pronominal syntagm (possibly with gap sentence)."
+  (:start 0) (:end 2 4)
+
+  (:arc 0 1 gap-pronoun (:set :gap))
+  (:arc 1 2 sentence)
+
+  (:arc 0 3 whose (:set :nested-nominal))
+  (:arc 3 4 sentence))
+
+(detector nominal
+  "Recognize nominal syntagms."
+  (:start 0) (:end 15 21)
+
+  ; article part
+
+  (:arc 0 10 article (:unset :nested-nominal))
+
+  ; (:arc 0 10 quantif (:unset :nested-nominal)) ; a quantificator can substitute an article
+
+  (:jump 0 10                       ; article is skippable
+	 (:if :nested-nominal)      ; if the nominal syntagm is nested in
+	 (:unset :nested-nominal))  ; certain kinds of syntagm
+
+  (:jump 0 10                       ; we can skip the article
+	 (:if-not :nested-nominal)  ; for certain kind of nouns and pronouns
+	 (:set :no-art))
+
+  ; adjective part
+
+  (:arc 10 11 adjectival)
+  (:arc 10 11 comparatival) ; maybe adjectives and comparisons can coexists
+
+  (:jump 10 11) ; adjectives and comparatives are optional
+
+  ; noun-adjectival part
+
+  (:arc 11 12 noun-adjectival)  ; to address the phenomenon of noun adjectivation
+
+  (:jump 11 12) ; the adjectivable part is optional
+
+  ; noun and pronoun part
+
+  (:arc 11 13 pronoun (:unset :no-art)) ; a pronoun is not preceded nor followed by other nouns
+
+  (:arc 11 13 pers-noun (:unset :no-art))
+  (:arc 11 13 plural-noun (:unset :no-art))
+
+  (:arc 12 13 noun (:if-not :no-art))
+  (:arc 12 13 possible-noun (:if-not :no-art))
+
+  (:arc 12 13 pers-noun (:unset :no-art))   ; personal or plural noun
+  (:arc 12 13 plural-noun (:unset :no-art)) ; ends the sequence of nouns
+
+  (:jump 13 20)
+  (:jump 13 15)
+
+  ; trailing prepositional or pronominal syntagm
+
+  (:arc 20 21 prepositional)
+  (:arc 20 21 pronominal))
+
+(detector present-simple
+  "Recognize present simple."
+  (:start 0) (:end 1)
+  (:arc 0 1 verb-i (:set :intransitive))
+  (:arc 0 1 verb-t (:set :transitive)))
+
+(detector present-continuous
+  "Recognize present continuous."
+  (:start 0) (:end 2)
+  (:arc 0 1 to-be)
+  (:arc 1 1 adverbal)
+  (:arc 1 2 ing-form intransitive (:set :intransitive))
+  (:arc 1 2 ing-form transitive   (:set :transitive)))
+
+(detector present-perfect
+  "Recognize present perfect."
+  (:start 0) (:end 2)
+  (:arc 0 1 to-have)
+  (:arc 1 1 adverbal)
+  (:arc 1 2 past-part intransitive (:set :intransitive))
+  (:arc 1 2 past-part transitive   (:set :transitive)))
+
+(detector past-simple
+  "Recognize past simple."
+  (:start 0) (:end 1)
+  (:arc 0 1 past-part intransitive (:set :intransitive))
+  (:arc 0 1 past-part transitive   (:set :transitive)))
+
+(detector future-simple
+  "Recognize future simple."
+  (:start 0) (:end 2)
+  (:arc 0 1 will)
+  (:arc 1 1 adverbal)
+  (:arc 1 2 verb-i (:set :intransitive))
+  (:arc 1 2 verb-t (:set :transitive)))
+
+(detector future-be-going-to
+  "Recognize future be-going-to."
+  (:start 0) (:end 4)
+  (:arc 0 1 to-be)
+  (:arc 1 1 adverbal)
+  (:arc 1 2 going)
+  (:arc 2 3 to)
+  (:arc 3 3 adverbal)
+  (:arc 3 4 verb-i (:set :intransitive))
+  (:arc 3 4 verb-t (:set :transitive)))
+
+(detector present-conditional
+  "Recognize present conditional."
+  (:start 0) (:end 2)
+  (:arc 0 1 cond-aux)
+  (:arc 1 1 adverbal)
+  (:arc 1 2 verb-i (:set :intransitive))
+  (:arc 1 2 verb-t (:set :transitive)))
+
+(detector present-perfect-continuous
+  "Recognize present perfect."
+  (:start 0) (:end 3)
+  (:arc 0 1 to-have)
+  (:arc 1 1 adverbal)
+  (:arc 1 2 been)
+  (:arc 2 2 adverbal)
+  (:arc 2 3 past-part intransitive (:set :intransitive))
+  (:arc 2 3 past-part transitive   (:set :transitive)))
+
+(detector past-continuous
+  "Recognize present continuous."
+  (:start 0) (:end 2)
+  (:arc 0 1 past-be)
+  (:arc 1 1 adverbal)
+  (:arc 1 2 ing-form intransitive (:set :intransitive))
+  (:arc 1 2 ing-form transitive   (:set :transitive)))
+
+(detector verbal
+  "Recognize verbal syntagms."
+  (:start 0) (:end :intransitive :transitive)
+
+  (:arc 0 0 adverbal)
+
+  (:arc 0 1 present-simple)
+  (:arc 0 1 present-continuous)
+  (:arc 0 1 present-perfect)
+  (:arc 0 1 past-simple)
+  (:arc 0 1 future-simple)
+  (:arc 0 1 future-be-going-to)
+  (:arc 0 1 present-conditional)
+  (:arc 0 1 present-perfect-continuous)
+  (:arc 0 1 past-continuous)
+
+  (:jump 1 12 (:if :intransitive) (:unset :intransitive))
+  (:jump 1 22 (:if :transitive)   (:unset :transitive))
+
+  ; intransitive
+
+  (:arc 12 :intransitive nominal)
+  (:jump 12 :intransitive) ; the nominal part is optional
+                           ; we restrict to a position that follows immediately the verb
+                           ; to avoid many inconsistent results (but it's an arbitrary decision...)
+
+  (:arc :intransitive :intransitive adverbal)
+  (:arc :intransitive :intransitive adjectival)
+  (:arc :intransitive :intransitive prepositional)
+  (:arc :intransitive :intransitive comparatival) ; TODO: check if it's the case to unset :gap
+
+  ; transitive
+
+  (:jump 22 :transitive (:if :gap) (:unset :gap))
+  
+  (:arc 22 :transitive nominal) ; the nominal part is NOT optional
+
+  (:arc :transitive :transitive adverbal)
+  (:arc :transitive :transitive prepositional))
+
+(detector sentence
+  "Recognize a sentence."
+  (:start 0) (:end 2)
+
+  (:jump 0 1 (:if :gap) (:unset :gap))
+
+  (:arc 0 1 nominal)
+  (:arc 1 2 verbal))
+
+(*- (parse ?SENTENCE ?RES)
+    (sentence-detector ?SENTENCE ?RES ?REST () ?OUT)
+    (null ?REST) (null ?OUT))
+
+(defun benchme ()
+  (print (timing (pl-solve-one '((parse (a blue and red blue has been killed by a red and blue blue) ?RES))))) 
+  (print "")
+  (print (timing (pl-solve-one '((parse (a blue and red man has been killed by a red and blue man) ?RES))))) 
+  (print "")
+  nil)
+
+(defparameter test-sentences
+  '((After Slitscan \, Laney heard about another job from Rydell \, the night security man at the Chateau)
+    (Rydell was a big quiet Tennessean with a sad shy grin \, cheap sunglasses \, and a walkie-talkie screwed permanently into one ear)
+    (Concrete beams overhead had been hand-painted to vaguely resemble blond oak)
+    (The chairs \, like the rest of the furniture in the Chateau s lobby \, were oversized to the extent that whoever sat in them seemed built to a smaller scale)
+    (Rydell used his straw to stir the foam and ice remaining at the bottom of his tall plastic cup \, as though he were hoping to find a secret prize))
+  "A little tribute to Gibson.")
+
+(defun testme ()
+  "Run splitters on test sentences."
+  (loop for sentence in test-sentences
+     do (print "")))
