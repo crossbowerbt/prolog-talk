@@ -24,6 +24,40 @@ This part of the project is an experiment I used to improve my knowledge of ling
 
 The prolog-tlk.lisp file contais an english sentence parser (TODO...)
 
+
+** Future Developments
+
+There are some improvements I would like to do to in future, if I will be able to reconcile study and my social life, in the next few months.
+
+*** Dictionary Improvements
+
+1) I plan to add relationships for *synonyms* and *antonyms*, to create a base for a semantic development of the parser.
+2) I should also add a database of *personal nouns* to improve nominal syntagms recognition.
+
+*** Parser Improvements
+
+1) Apply optimizations (or even rewrite some parts of the parser) to improve the performance.
+2) Reduce the ambiguity of verbal syntagms when prepositions and adverbs are present in sentences (this probably requires some semantics). 
+3) Add *semantical* parsing.
+
+*** Applications built on top of the system
+
+1) I would like to experiment with a languange translation tool built on top of the parser. I want to program a non-literal translator, i.e. a translator that reconstrunct sentences in different languages exploiting relationships between words and not their positions.
+
+For example:
+/A red cat crossed the street while i was driving./
+Can be translated literally as:
+/Un chat rouge a traversé la rue alors que je conduisais./
+But can be also expressed as:
+/J'étais en voiture et un chat rouge traversé la rue./
+With a minimal shift of meaning.
+
+A non-literal translator should also be able to introduce synonyms for common words to avoid repetitions.
+
+2) Adding an internal knowledge representation system, it should be possible to create an interface that can respond to user input (in a natural language), matching it against some features of the input internal representation.
+
+More simply: developing something like Siri (http://www.apple.com/ios/siri/) or Iris (https://play.google.com/store/apps/details?id=com.dexetra.iris) using a specialized regexp language working on natural language parse trees.
+
 ** Further Reading
 
 An excellent tutorial to familiarize with NLP is: Natural Language Processing Techniques in Prolog by Patrick Blackburn and Kristina Striegnitz (http://cs.union.edu/~striegnk/courses/nlp-with-prolog/html/).
