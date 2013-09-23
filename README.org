@@ -42,7 +42,7 @@ There are some improvements I would like to do to in future, if I will be able t
 
 *** Applications built on top of the system
 
-- I would like to experiment with a languange translation tool built on top of the parser. I want to program a non-literal translator, i.e. a translator that reconstrunct sentences in different languages exploiting relationships between words and not their positions.
+- I would like to experiment with a *languange translation tool* built on top of the parser. I want to program a non-literal translator, i.e. a translator that reconstrunct sentences in different languages exploiting relationships between words and not their positions.
 
 For example:
 /A red cat crossed the street while i was driving./
@@ -56,7 +56,7 @@ With a minimal shift of meaning.
 
 A non-literal translator should also be able to introduce synonyms for common words to avoid repetitions.
 
-- Adding an internal knowledge representation system, it should be possible to create an interface that can respond to user input (in a natural language), matching it against some features of the input internal representation.
+- Adding an /internal knowledge representation system/, it should be possible to create an *interface* that can respond to user input (in a natural language), matching it against some features of the input internal representation.
 
 More simply: developing something like Siri (http://www.apple.com/ios/siri/) or Iris (https://play.google.com/store/apps/details?id=com.dexetra.iris) using a specialized regexp language working on natural language parse trees.
 
