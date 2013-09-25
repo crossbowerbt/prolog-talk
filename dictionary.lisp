@@ -1,5 +1,5 @@
 
-(format t "A.")
+(format t "A.") (finish-output nil)
 
 (*- (prep A))
 
@@ -16442,7 +16442,7 @@
 (*- (adj Azymous))
 
 
-(format t "B.")
+(format t "B.") (finish-output nil)
 
 (*- (verb-i Ba))
 
@@ -29283,7 +29283,7 @@
 (*- (adj Byzantine))
 
 
-(format t "C.")
+(format t "C.") (finish-output nil)
 
 (*- (noun1 Caaba))
 
@@ -47519,7 +47519,7 @@
 (*- (noun1 Cystoidean))
 
 
-(format t "D.")
+(format t "D.") (finish-output nil)
 
 (*- (noun1 Dab))
 
@@ -62842,7 +62842,7 @@
 (*- (domain Dziggetai Zoöl))
 
 
-(format t "E.")
+(format t "E.") (finish-output nil)
 
 (*- (adj Each))
 
@@ -73811,7 +73811,7 @@
 (*- (noun1 Eysell))
 
 
-(format t "F.")
+(format t "F.") (finish-output nil)
 
 (*- (noun1 Fa))
 
@@ -83351,7 +83351,7 @@
 (*- (noun1 Fytte))
 
 
-(format t "G.")
+(format t "G.") (finish-output nil)
 
 (*- (noun1 Gab))
 
@@ -90975,7 +90975,7 @@
 (*- (verb-t Gyve))
 
 
-(format t "H.")
+(format t "H.") (finish-output nil)
 
 (*- (noun1 Haaf))
 
@@ -99549,7 +99549,7 @@
 (*- (noun1 Hythe))
 
 
-(format t "I.")
+(format t "I.") (finish-output nil)
 
 (*- (pronoun I))
 
@@ -111388,7 +111388,7 @@
 (*- (noun1 Izzard))
 
 
-(format t "J.")
+(format t "J.") (finish-output nil)
 
 (*- (verb-t Jab))
 
@@ -113356,7 +113356,7 @@
 (*- (noun1 Juxtaposition))
 
 
-(format t "K.")
+(format t "K.") (finish-output nil)
 
 (*- (noun1 Kaama))
 (*- (domain Kaama Zoöl))
@@ -115389,7 +115389,7 @@
 (*- (noun1 Kytoplasma))
 
 
-(format t "L.")
+(format t "L.") (finish-output nil)
 
 (*- (noun1 L))
 
@@ -123229,7 +123229,7 @@
 (*- (base-pl Lytta Lyttæ))
 
 
-(format t "M.")
+(format t "M.") (finish-output nil)
 
 (*- (noun1 M))
 
@@ -136803,7 +136803,7 @@
 (*- (pl-noun Myzostomata))
 
 
-(format t "N.")
+(format t "N.") (finish-output nil)
 
 (*- (noun1 N))
 (*- (domain N Print))
@@ -141120,7 +141120,7 @@
 (*- (domain Nyula Zoöl))
 
 
-(format t "O.")
+(format t "O.") (finish-output nil)
 
 (*- (noun1 O))
 (*- (base-pl O O's))
@@ -147855,7 +147855,7 @@
 (*- (adj Ozonous))
 
 
-(format t "P.")
+(format t "P.") (finish-output nil)
 
 (*- (adj Pabular))
 
@@ -169883,7 +169883,7 @@
 (*- (noun1 Pyxis))
 
 
-(format t "Q.")
+(format t "Q.") (finish-output nil)
 
 (*- (conj Qua))
 
@@ -171375,7 +171375,7 @@
 (*- (noun1 Quran))
 
 
-(format t "R.")
+(format t "R.") (finish-output nil)
 
 (*- (noun1 Rabat))
 
@@ -179537,7 +179537,7 @@
 (*- (noun1 Rytina))
 
 
-(format t "S.")
+(format t "S.") (finish-output nil)
 
 (*- (noun1 Saadh))
 
@@ -208064,7 +208064,7 @@
 (*- (base-pl Syzygy Syzygies))
 
 
-(format t "T.")
+(format t "T.") (finish-output nil)
 
 (*- (verb-t Ta))
 
@@ -221254,7 +221254,7 @@
 (*- (domain Tzetze Zoöl))
 
 
-(format t "U.")
+(format t "U.") (finish-output nil)
 
 (*- (noun1 Uakari))
 (*- (domain Uakari Zoöl))
@@ -226569,7 +226569,7 @@
 (*- (noun1 Uzema))
 
 
-(format t "V.")
+(format t "V.") (finish-output nil)
 
 (*- (noun1 Vaagmer))
 
@@ -230594,7 +230594,7 @@
 
 
 
-(format t "W.")
+(format t "W.") (finish-output nil)
 
 (*- (noun1 Waag))
 (*- (domain Waag Zoöl))
@@ -235996,7 +235996,7 @@
 (*- (domain Wyvern Her))
 
 
-(format t "X.")
+(format t "X.") (finish-output nil)
 
 
 (*- (noun1 Xanthamide))
@@ -236272,7 +236272,7 @@
 (*- (noun1 Xyster))
 
 
-(format t "Y.")
+(format t "Y.") (finish-output nil)
 
 (*- (noun1 Y))
 (*- (base-pl Y Y's))
@@ -237077,7 +237077,7 @@
 (*- (adverb Ywis))
 
 
-(format t "Z.")
+(format t "Z.") (finish-output nil)
 
 (*- (noun1 Za))
 (*- (domain Za Min))

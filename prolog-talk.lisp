@@ -383,10 +383,11 @@
 			       (if-opt     (cdr (assoc :if     (remove-if-not #'listp arc))))
 			       (if-not-opt (cdr (assoc :if-not (remove-if-not #'listp arc))))
 			       (set-opt    (cdr (assoc :set    (remove-if-not #'listp arc))))
-			       (unset-opt  (cdr (assoc :unset  (remove-if-not #'listp arc)))))
+			       (unset-opt  (cdr (assoc :unset  (remove-if-not #'listp arc))))
+			       (label      (cdr (assoc :label  (remove-if-not #'listp arc)))))
 			  
 			  (cond ((eq type :jump)        ; a jump arc
-				 `(*- (,arc-name ,from ,to ?PHRASE (:jump) ?PHRASE ?IN-OPT ?OUT-OPT)				     
+				 `(*- (,arc-name ,from ,to ?PHRASE ,label ?PHRASE ?IN-OPT ?OUT-OPT)				     
 				      ,@(when if-opt     (list `(in-options     ,if-opt     ?IN-OPT))) 
 				      ,@(when if-not-opt (list `(not-in-options ,if-not-opt ?IN-OPT)))
 				      ,@(if (or unset-opt set-opt)
@@ -491,7 +492,7 @@
   (:start 0) (:end 2)
   (:arc 0 1 prep (:set :nested-nominal))
   
-  (:jump 1 2 (:if :gap) (:unset :gap :nested-nominal))
+  (:jump 1 2 (:if :gap) (:unset :gap :nested-nominal) (:label :gap))
 
   (:arc 1 2 nominal))
 
@@ -663,7 +664,7 @@
 
   ; transitive
 
-  (:jump 22 :transitive (:if :gap) (:unset :gap))
+  (:jump 22 :transitive (:if :gap) (:unset :gap) (:label :gap))
   
   (:arc 22 :transitive nominal) ; the nominal part is NOT optional
 
@@ -674,7 +675,7 @@
   "Recognize a sentence."
   (:start 0) (:end 2)
 
-  (:jump 0 1 (:if :gap) (:unset :gap))
+  (:jump 0 1 (:if :gap) (:unset :gap) (:label :gap))
 
   (:arc 0 1 nominal)
   (:arc 1 2 verbal))
@@ -695,5 +696,24 @@
     (Rydell used his straw to stir the foam and ice remaining at the bottom of his tall plastic cup \, as though he were hoping to find a secret prize))
   "A little tribute to Gibson.")
 
+ ;;;;;;;;;;;;;;;;
+ ;; REPL Stuff ;;
+ ;;;;;;;;;;;;;;;;
 
+(defun read-sentence ()
+  "Read a sentence to parse from STDIN."
+  (read-from-string (concatenate 'string "(" (read-line) ")")))
+
+(defun parse-sentence (sentence)
+  "Parse a sentence."
+  (cdr (assoc '?RES (pl-solve-one (list (list 'parse sentence '?RES))))))
+
+(defun repl ()
+  "Interface."
+  (let (sentence (read-sentence))
+    (unless (equal sentence '(quit))
+      (print (parse-sentence (read-sentence)))
+      (repl))))
+
+(repl)
 
