@@ -151,22 +151,6 @@
 
 (*- (article one)) ; by extension...
 
-;; (*- (quantif two))
-;; (*- (quantif three))
-;; (*- (quantif four))
-;; (*- (quantif five))
-;; (*- (quantif six))
-;; (*- (quantif seven))
-;; (*- (quantif eight))
-;; (*- (quantif nine))
-;; (*- (quantif ten))
-
-;; (*- (quantif some))
-;; (*- (quantif several))
-;; (*- (quantif many))
-;; (*- (quantif few))
-;; (*- (quantif all)) ; TODO: complete the picture
-
  ;;;;;;;;;;;;;;;;;;
  ;; Comparatives ;;
  ;;;;;;;;;;;;;;;;;;
@@ -193,15 +177,6 @@
 (*- (gap-pronoun which))
 
 (*- (whose whose))
-
-(*- (nogap-pronoun whose))
-
- ;;;;;;;;;;;;;;;
- ;; Negations ;;
- ;;;;;;;;;;;;;;;
-
-(*- (not no))
-(*- (not not))
 
  ;;;;;;;;;;;;;;;;;
  ;; Punctuation ;;
@@ -250,12 +225,6 @@
 (*- (been been))
 (*- (will will))
 
-(*- (gen-verb ?VERB) (to-be ?VERB) (cut) (fail))
-(*- (gen-verb ?VERB) (to-have ?VERB) (cut) (fail))
-(*- (gen-verb ?VERB) (past-be ?VERB) (cut) (fail))
-(*- (gen-verb ?VERB) (past-have ?VERB) (cut) (fail))
-(*- (gen-verb ?VERB))
-
  ;;;;;;;;;;;;;;;;;;;;
  ;; List Utilities ;;
  ;;;;;;;;;;;;;;;;;;;;
@@ -265,22 +234,8 @@
 (*- (null ()))
 (*- (not-null ?VAL) (lop (not-eq ?VAL ())))
 
-(*- (symbol ?SYM) (lop (symbolp ?SYM)))
-
-(*- (length ?LIST ?LEN) (is ?LEN (lop (length ?LIST))))
-
-(*- (list ?LIST) (lop (listp ?LIST)))
-(*- (list ?LIST ?LEN) (list ?LIST) (length ?LIST ?LEN))
-(*- (list ?LIST ?MIN ?MAX) (list ?LIST) (length ?LIST ?LEN)
-    (lop (>= ?LEN ?MIN)) (lop (<= ?LEN ?MAX)))
-
-(*- (first  ?LIST ?EL) (is ?EL (lop (first ?LIST))))
-(*- (second ?LIST ?EL) (is ?EL (lop (second ?LIST))))
-(*- (third  ?LIST ?EL) (is ?EL (lop (third ?LIST))))
-(*- (fourth ?LIST ?EL) (is ?EL (lop (fourth ?LIST))))
-(*- (fifth  ?LIST ?EL) (is ?EL (lop (fifth ?LIST))))
-
-(*- (rest ?LIST ?REST)  (is ?REST (lop (rest ?LIST))))
+(*- (symbolp ?SYM)  (lop (symbolp ?SYM)))
+(*- (listp   ?LIST) (lop (listp ?LIST)))
 
 (*- (first-rest () ?FIRST ?REST) (cut) (fail))
 (*- (first-rest ?LIST ?FIRST ?REST)
@@ -335,15 +290,6 @@
 
 (*- (add-tag-word ?WORD ?TAG ?RES)
     (is ?RES (lop (add-tag-word ?WORD ?TAG))))
-
-(defun get-keyword (alist)
-  "Return the first element of alist when it is a keyword."
-  (when (and (listp alist) (keywordp (car alist))) 
-    (car alist)))
-
-(defun syntagm-equal (syntagm type)
-  "Check if the syntagm is of the specified type."
-  (eq (get-keyword syntagm) type))
 
 ;; Options stuff
 
@@ -478,28 +424,16 @@
 			  
 			  arcs)
 
-	    (*- (,name ?SYNTAGM) (lop (syntagm-equal ?SYNTAGM ,key-name))) ; is syntagm of this type?
-
 	    (*- (,detector-name ?PHRASE ?FINAL-SYNTAGM ?REST ?IN-OPT ?OUT-OPT)  ; used directly by the user
 	    	(,start-name ?STATE)                                            ; start from a valid state
 	    	(,detector-name ?PHRASE ?STATE ?SYNTAGM ?REST ?END-STATE ?IN-OPT ?OUT-OPT)
 		(add-tag ?SYNTAGM  ?END-STATE    ?SYNTAGM2)                     ; add the state tag (only if the state is a tag)
 		(add-tag ?SYNTAGM2 ,key-name ?FINAL-SYNTAGM))                   ; add the tag to the syntagm
 
-	    ;; (*- (,detector-name () ?STATE () () ?STATE ?IN-OPT ?IN-OPT) ; end of the phrase
-	    ;; 	(cut) (,end-name ?STATE))
-
 	    (*- (,detector-name ?PHRASE ?STATE ?SYNTAGM ?REST ?END-STATE ?IN-OPT ?OUT-OPT)
 	    	(,arc-name ?STATE ?NEW-STATE ?PHRASE ?HEAD-SYNTAGM ?REST-PHRASE ?IN-OPT ?NEW-IN-OPT)
 	    	(,detector-name ?REST-PHRASE ?NEW-STATE ?REST-SYNTAGM ?REST ?END-STATE ?NEW-IN-OPT ?OUT-OPT)
 	    	(prepend-not-null-one ?HEAD-SYNTAGM ?REST-SYNTAGM ?SYNTAGM))
-
-	    ;; (*- (,detector-name ?PHRASE ?STATE ?SYNTAGM ?REST ?IN-OPT ?OUT-OPT) ; an arc exists that takes
-	    ;; 	(not-null ?PHRASE)                                              ; the automaton somewhere
-	    ;; 	(first-rest ?PHRASE ?WORD ?NPHRASE)
-	    ;; 	(,arc-name ?STATE ?NSTATE ?WORD ?IN-OPT ?NIN-OPT)
-	    ;; 	(,detector-name ?NPHRASE ?NSTATE ?NSYNTAGM ?REST ?NIN-OPT ?OUT-OPT)
-	    ;; 	(prepend-one ?WORD ?NSYNTAGM ?SYNTAGM))
 
 	    (*- (,detector-name ?PHRASE ?STATE () ?PHRASE ?STATE ?IN-OPT ?IN-OPT) ; no more arcs:
 		(,end-name ?STATE))                                ; are we in a valid end state?
@@ -750,11 +684,8 @@
     (null ?REST) (null ?OUT))
 
 (defun benchme ()
-  (print (timing (pl-solve-one '((parse (a blue and red blue has been killed by a red and blue blue) ?RES))))) 
-  (print "")
-  (print (timing (pl-solve-one '((parse (a blue and red man has been killed by a red and blue man) ?RES))))) 
-  (print "")
-  nil)
+  (print (timing (pl-solve-one '((parse (a red cat fastly jumped onto the table which is in the kitchen of the house) ?RES)))))
+  (print ""))
 
 (defparameter test-sentences
   '((After Slitscan \, Laney heard about another job from Rydell \, the night security man at the Chateau)
@@ -764,7 +695,5 @@
     (Rydell used his straw to stir the foam and ice remaining at the bottom of his tall plastic cup \, as though he were hoping to find a secret prize))
   "A little tribute to Gibson.")
 
-(defun testme ()
-  "Run splitters on test sentences."
-  (loop for sentence in test-sentences
-     do (print "")))
+
+
