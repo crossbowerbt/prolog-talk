@@ -696,6 +696,38 @@
     (Rydell used his straw to stir the foam and ice remaining at the bottom of his tall plastic cup \, as though he were hoping to find a secret prize))
   "A little tribute to Gibson.")
 
+; the monkey heard about the very next ship which is yellow
+
+ ;;;;;;;;;;;;;;;;;
+ ;; DOT Output  ;;
+ ;;;;;;;;;;;;;;;;;
+
+(defparameter dot-output nil "Activate dot output.")
+
+(defun dot-output (parsed-sentence)
+  "Dump the sentence in dot format."
+  (labels ((dot-output-inner (sentence num)
+	     (cond ((keywordp sentence)
+		    (format t "~&\"~a ~a\" [shape=box,style=filled,color=yellow]" sentence num))
+		   
+		   ((symbolp sentence)
+		    (format t "~&\"~a ~a\" [shape=box,style=filled,color=\".7 .3 1.0\"]~%~%" sentence num))
+
+		   ((equal sentence '(:gap))
+		    (format t "~&\"~a ~a\" [shape=box,style=filled,color=red]" (first sentence) num))
+	
+		   ((listp sentence)
+		    (mapc (lambda (el)
+			    (format t "~&\"~a ~a\" -> \"~a ~a\"~%" 
+				    (first sentence) num
+				    (if (listp el) (first el) el) (1+ num)) 
+			    (dot-output-inner el (1+ num)))
+			  (rest sentence))))))
+
+    (format t "~%digraph G {~%~%")
+    (dot-output-inner parsed-sentence 0)
+    (format t "~%}~%")))
+
  ;;;;;;;;;;;;;;;;
  ;; REPL Stuff ;;
  ;;;;;;;;;;;;;;;;
@@ -710,9 +742,10 @@
 
 (defun repl ()
   "Interface."
-  (let (sentence (read-sentence))
+  (let ((sentence (read-sentence)))
     (unless (equal sentence '(quit))
-      (print (parse-sentence (read-sentence)))
+      (print (parse-sentence sentence))
+      (finish-output nil)
       (repl))))
 
 (repl)
