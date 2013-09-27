@@ -22,8 +22,154 @@ Since the dictionary is simply a text file containing prolog facts it can be eas
 *** The Natural Language Parser
 This part of the project is an experiment I used to improve my knowledge of linguistics and natural language processing.
 
-The prolog-tlk.lisp file contais an english sentence parser (TODO...)
+The prolog-talk.lisp file contais an english sentence parser (TODO...)
 
+**** Usage
+
+The *gambol* module is required to run the script. You can use quicklisp (http://www.quicklisp.org/) to install it, or if your common-lisp implementation imcludes asdf you can use asdf-install (deprecated).
+Here we assume gambol is correctly installed and the lisp implementation is SBCL.
+
+To run the program (inside the directory):
+#+BEGIN_SRC
+$ sbcl --script ./prolog-talk.lisp
+#+END_SRC
+
+After the launch, the program loads the dictionary. This can require some time since the prolog implementation we use is not optimized for big databases of facts.
+
+When the loading process completes you are free to enter english sentences:
+#+BEGIN_SRC
+Loading dictionary:
+A.B.C.D.E.F.G.H.I.J.K.L.M.N.O.P.Q.R.S.T.U.V.W.X.Y.Z.
+input> 
+#+END_SRC
+
+The program is not perfect, but can handle english phrases of a certain complexity:
+#+BEGIN_SRC
+input> the monkey heard about the very next ship which is yellow and green
+(:SENTENCE (:NOMINAL (:ARTICLE THE) (:NOUN MONKEY))
+ (:VERBAL :INTRANSITIVE (:PAST-SIMPLE (:PAST-PART HEARD))
+  (:PREPOSITIONAL (:PREP ABOUT)
+   (:NOMINAL (:ARTICLE THE)
+    (:ADJECTIVAL (:ADVERBAL (:ADVERB VERY)) (:ADJ NEXT)) (:NOUN SHIP)
+    (:PRONOMINAL (:GAP-PRONOUN WHICH)
+     (:SENTENCE (:GAP)
+      (:VERBAL :INTRANSITIVE (:PRESENT-SIMPLE (:VERB-I IS))
+       (:ADJECTIVAL (:ADJ YELLOW) (:CONJ AND) (:ADJ GREEN)))))))))
+#+END_SRC
+
+Without taking into account the senselessness of the sentence, we see that the sintactic structure is correctly recognized, even the subordinate clause which includes a gap.
+
+The structure is better visualized using a tree. We can generate visual graphs instead of lisp-style trees giving the command:
+#+BEGIN_SRC
+dot output
+#+END_SRC
+
+The same sentence generates this graph:
+#+BEGIN_SRC
+digraph G {
+
+"SENTENCE NIL" -> "NOMINAL (1)"
+"NOMINAL (1)" -> "ARTICLE (1 1)"
+"ARTICLE (1 1)" -> "THE (1 1 1)"
+"THE (1 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"NOMINAL (1)" -> "NOUN (1 2)"
+"NOUN (1 2)" -> "MONKEY (1 2 1)"
+"MONKEY (1 2 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"SENTENCE NIL" -> "VERBAL (2)"
+"VERBAL (2)" -> "INTRANSITIVE (2 1)"
+"INTRANSITIVE (2 1)" [style=filled,color=yellow]
+"VERBAL (2)" -> "PAST-SIMPLE (2 2)"
+"PAST-SIMPLE (2 2)" -> "PAST-PART (2 2 1)"
+"PAST-PART (2 2 1)" -> "HEARD (2 2 1 1)"
+"HEARD (2 2 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"VERBAL (2)" -> "PREPOSITIONAL (2 3)"
+"PREPOSITIONAL (2 3)" -> "PREP (2 3 1)"
+"PREP (2 3 1)" -> "ABOUT (2 3 1 1)"
+"ABOUT (2 3 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"PREPOSITIONAL (2 3)" -> "NOMINAL (2 3 2)"
+"NOMINAL (2 3 2)" -> "ARTICLE (2 3 2 1)"
+"ARTICLE (2 3 2 1)" -> "THE (2 3 2 1 1)"
+"THE (2 3 2 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"NOMINAL (2 3 2)" -> "ADJECTIVAL (2 3 2 2)"
+"ADJECTIVAL (2 3 2 2)" -> "ADVERBAL (2 3 2 2 1)"
+"ADVERBAL (2 3 2 2 1)" -> "ADVERB (2 3 2 2 1 1)"
+"ADVERB (2 3 2 2 1 1)" -> "VERY (2 3 2 2 1 1 1)"
+"VERY (2 3 2 2 1 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"ADJECTIVAL (2 3 2 2)" -> "ADJ (2 3 2 2 2)"
+"ADJ (2 3 2 2 2)" -> "NEXT (2 3 2 2 2 1)"
+"NEXT (2 3 2 2 2 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"NOMINAL (2 3 2)" -> "NOUN (2 3 2 3)"
+"NOUN (2 3 2 3)" -> "SHIP (2 3 2 3 1)"
+"SHIP (2 3 2 3 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"NOMINAL (2 3 2)" -> "PRONOMINAL (2 3 2 4)"
+"PRONOMINAL (2 3 2 4)" -> "GAP-PRONOUN (2 3 2 4 1)"
+"GAP-PRONOUN (2 3 2 4 1)" -> "WHICH (2 3 2 4 1 1)"
+"WHICH (2 3 2 4 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"PRONOMINAL (2 3 2 4)" -> "SENTENCE (2 3 2 4 2)"
+"SENTENCE (2 3 2 4 2)" -> "GAP (2 3 2 4 2 1)"
+"GAP (2 3 2 4 2 1)" [style=filled,color=red]
+"SENTENCE (2 3 2 4 2)" -> "VERBAL (2 3 2 4 2 2)"
+"VERBAL (2 3 2 4 2 2)" -> "INTRANSITIVE (2 3 2 4 2 2 1)"
+"INTRANSITIVE (2 3 2 4 2 2 1)" [style=filled,color=yellow]
+"VERBAL (2 3 2 4 2 2)" -> "PRESENT-SIMPLE (2 3 2 4 2 2 2)"
+"PRESENT-SIMPLE (2 3 2 4 2 2 2)" -> "VERB-I (2 3 2 4 2 2 2 1)"
+"VERB-I (2 3 2 4 2 2 2 1)" -> "IS (2 3 2 4 2 2 2 1 1)"
+"IS (2 3 2 4 2 2 2 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"VERBAL (2 3 2 4 2 2)" -> "ADJECTIVAL (2 3 2 4 2 2 3)"
+"ADJECTIVAL (2 3 2 4 2 2 3)" -> "ADJ (2 3 2 4 2 2 3 1)"
+"ADJ (2 3 2 4 2 2 3 1)" -> "YELLOW (2 3 2 4 2 2 3 1 1)"
+"YELLOW (2 3 2 4 2 2 3 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"ADJECTIVAL (2 3 2 4 2 2 3)" -> "CONJ (2 3 2 4 2 2 3 2)"
+"CONJ (2 3 2 4 2 2 3 2)" -> "AND (2 3 2 4 2 2 3 2 1)"
+"AND (2 3 2 4 2 2 3 2 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"ADJECTIVAL (2 3 2 4 2 2 3)" -> "ADJ (2 3 2 4 2 2 3 3)"
+"ADJ (2 3 2 4 2 2 3 3)" -> "GREEN (2 3 2 4 2 2 3 3 1)"
+"GREEN (2 3 2 4 2 2 3 3 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+
+}
+#+END_SRC
+
+We can save the output and generate the image with the command:
+#+BEGIN_SRC
+$ dot -Tpng sentence.dot -o sentence.png
+#+END_SRC
+
+The image for this particular sentence is:
+[[file:sentence.png]]
+
+One last option needs explanations. With the command *multiple trees* the program will try to parse sentences that present ambiguity in every possible way.
+For example:
+#+BEGIN_SRC
+input> multiple trees
+input> i look at the apples on the tree
+((:SENTENCE (:NOMINAL (:PRONOUN I))
+  (:VERBAL :INTRANSITIVE (:PRESENT-SIMPLE (:VERB-I LOOK))
+   (:PREPOSITIONAL (:PREP AT)
+    (:NOMINAL (:ARTICLE THE) (:NOUN APPLES)
+     (:PREPOSITIONAL (:PREP ON) (:NOMINAL (:ARTICLE THE) (:NOUN TREE)))))))
+ (:SENTENCE (:NOMINAL (:PRONOUN I))
+  (:VERBAL :INTRANSITIVE (:PRESENT-SIMPLE (:VERB-I LOOK))
+   (:PREPOSITIONAL (:PREP AT)
+    (:NOMINAL (:ARTICLE THE) (:NOUN APPLES)))
+   (:PREPOSITIONAL (:PREP ON) (:NOMINAL (:ARTICLE THE) (:NOUN TREE)))))) 
+#+END_SRC
+
+Here two parse trees are returned. In the first one the prepositional syntagm "on the tree" is inside the nominal syntagm "the apples"; this means that the apples I'm looking at, are on a tree. In the second case "on the tree" is inside the verbal syntagm; this means that I'm looking while I am on the tree (not the apples).
+
+This kind of ambiguity can not be reduced without using some semantic method (and even in that case both senses are possible, so the problem probably requires also some probabilistic method...)
 
 ** Future Developments
 
@@ -36,7 +182,7 @@ There are some improvements I would like to do to in future, if I will be able t
 
 *** Parser Improvements
 
-1) Apply optimizations (or even rewrite some parts of the parser) to improve the performance.
+1) Apply optimizations (or even rewrite some parts of the parser) to improve the performance. Because, really, *IT'S SO SLOW*.
 2) Reduce the ambiguity of verbal syntagms when prepositions and adverbs are present in sentences (this probably requires some semantics). 
 3) Add *semantical* parsing.
 

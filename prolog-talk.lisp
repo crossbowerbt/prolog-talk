@@ -69,7 +69,9 @@
 (*- (imperfect ?VERB) (imperfect ?BASE-FORM ?VERB))
 (*- (past-part ?VERB) (past-part ?BASE-FORM ?VERB))
 (*- (ing-form  ?VERB) (ing-form  ?BASE-FORM ?VERB))
-(*- (verbal-noun ?VN) (verbal-noun ?BASE-VERB ?VN))
+
+; TODO:
+; (*- (verbal-noun ?VN) (verbal-noun ?BASE-VERB ?VN))
 
 (*- (verb-conj ?BASE-FORM ?VERB) (imperfect ?BASE-FORM ?VERB) (cut))
 (*- (verb-conj ?BASE-FORM ?VERB) (past-part ?BASE-FORM ?VERB) (cut))
@@ -78,8 +80,11 @@
 (*- (base-verb ?VERB) (verb-i ?VERB) (cut))
 (*- (base-verb ?VERB) (verb-t ?VERB) (cut))
 
+(*- (plural-verb ?VERB) (base-pl ?BASE-VERB ?VERB) (base-verb ?BASE-VERB))
+
 (*- (verb ?VERB) (base-verb ?VERB) (cut))
 (*- (verb ?VERB) (verb-conj ?BASE-FORM ?VERB) (cut))
+(*- (verb ?VERB) (plural-verb ?VERB) (cut))
 
 (*- (transitive   ?VERB) (verb-t ?VERB) (cut))
 (*- (transitive   ?VERB) (verb-conj ?BASE-FORM ?VERB) (verb-t ?BASE-FORM) (cut))
@@ -583,8 +588,8 @@
 (detector past-simple
   "Recognize past simple."
   (:start 0) (:end 1)
-  (:arc 0 1 past-part intransitive (:set :intransitive))
-  (:arc 0 1 past-part transitive   (:set :transitive)))
+  (:arc 0 1 imperfect intransitive (:set :intransitive))
+  (:arc 0 1 imperfect transitive   (:set :transitive)))
 
 (detector future-simple
   "Recognize future simple."
@@ -698,35 +703,45 @@
 
 ; the monkey heard about the very next ship which is yellow
 
+ ;;;;;;;;;;;;;;;;;;;;;;;;
+ ;; Interactive Modes  ;;
+ ;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defparameter dot-output-trigger nil "Activate dot output.")
+(defparameter multiple-trees-trigger nil "Activate multiple parse trees.")
+
  ;;;;;;;;;;;;;;;;;
  ;; DOT Output  ;;
  ;;;;;;;;;;;;;;;;;
 
-(defparameter dot-output nil "Activate dot output.")
-
 (defun dot-output (parsed-sentence)
   "Dump the sentence in dot format."
-  (labels ((dot-output-inner (sentence num)
+  (labels ((dot-output-inner (sentence &optional (coord '()))
 	     (cond ((keywordp sentence)
-		    (format t "~&\"~a ~a\" [shape=box,style=filled,color=yellow]" sentence num))
+		    (format t "~&\"~a ~a\" [style=filled,color=yellow]" sentence (reverse coord)))
 		   
 		   ((symbolp sentence)
-		    (format t "~&\"~a ~a\" [shape=box,style=filled,color=\".7 .3 1.0\"]~%~%" sentence num))
+		    (format t "~&\"~a ~a\" [shape=box,style=filled,color=\".7 .3 1.0\"]~%~%" sentence (reverse coord)))
 
 		   ((equal sentence '(:gap))
-		    (format t "~&\"~a ~a\" [shape=box,style=filled,color=red]" (first sentence) num))
+		    (format t "~&\"~a ~a\" [style=filled,color=red]" (first sentence) (reverse coord)))
 	
 		   ((listp sentence)
-		    (mapc (lambda (el)
-			    (format t "~&\"~a ~a\" -> \"~a ~a\"~%" 
-				    (first sentence) num
-				    (if (listp el) (first el) el) (1+ num)) 
-			    (dot-output-inner el (1+ num)))
-			  (rest sentence))))))
+		    (loop for i from 1 below (length sentence) 
+		       do (progn (format t "~&\"~a ~a\" -> \"~a ~a\"~%" 
+					 (first sentence) (reverse coord)
+					 (if (listp (nth i sentence))
+					     (first (nth i sentence))
+					     (nth i sentence))
+					 (reverse (cons i coord)))
+				 (dot-output-inner (nth i sentence) (cons i coord))))))))
 
-    (format t "~%digraph G {~%~%")
-    (dot-output-inner parsed-sentence 0)
-    (format t "~%}~%")))
+    (format t "digraph G {~%~%")
+    (if multiple-trees-trigger
+	(loop for i from 1 below (length parsed-sentence)
+	   do (dot-output-inner (nth (1- i) parsed-sentence) (list i)))
+	(dot-output-inner parsed-sentence))
+    (format t "~%}")))
 
  ;;;;;;;;;;;;;;;;
  ;; REPL Stuff ;;
@@ -738,15 +753,33 @@
 
 (defun parse-sentence (sentence)
   "Parse a sentence."
-  (cdr (assoc '?RES (pl-solve-one (list (list 'parse sentence '?RES))))))
+  (if multiple-trees-trigger
+      (mapcar (lambda (tree)
+		(cdr (assoc '?RES tree)))
+	      (pl-solve-all (list (list 'parse sentence '?RES))))
+      (cdr (assoc '?RES (pl-solve-one (list (list 'parse sentence '?RES)))))))
+
 
 (defun repl ()
   "Interface."
+  
+  (format t "~&input> ")
+  (finish-output nil)
+  
   (let ((sentence (read-sentence)))
-    (unless (equal sentence '(quit))
-      (print (parse-sentence sentence))
-      (finish-output nil)
-      (repl))))
+    
+    (cond ((equal sentence '(dot output))     ; enable/disable dot output mode
+	   (setf dot-output-trigger (not dot-output-trigger)))
+
+	  ((equal sentence '(multiple trees)) ; enable/disable multiple parsing trees
+	   (setf multiple-trees-trigger (not multiple-trees-trigger)))
+	  
+	  (t (if dot-output-trigger           ; parse sentence
+		 (dot-output (parse-sentence sentence))
+		 (print (parse-sentence sentence)))))) 
+  
+  (finish-output nil)
+  (repl))
 
 (repl)
 
