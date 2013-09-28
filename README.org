@@ -12,8 +12,8 @@ I built a new /English Grammar dictionary/ exploiting the niceties of the prolog
 This dictionary is no longer covered by copyrights and contains about _110000 unique words_ (i.e. plurals, conjugations are _not_ counted), more than ten times larger Basic English Grammar.
 
 In addition some useful grammar's relationships:
-1) *Verbs* are marked as *intransitive* or *transitive* and are linked to their *imperfect*, *past participle*, *verbal noun* and *-ing* forms.
-2) *Nouns* are linked to their *irregular plurals*.
+1) *Verbs* are marked as *intransitive* or *transitive* and are linked to their *third person*, *imperfect*, *past participle*, and *-ing* forms.
+2) *Nouns* are linked to their *plurals*.
 3) *Adjectives* are linked to their *comparative* and *superlative* forms.
 4) The dictionary includes *pronouns*, *adverbs* and *prepositions*.
 
@@ -22,7 +22,9 @@ Since the dictionary is simply a text file containing prolog facts it can be eas
 *** The Natural Language Parser
 This part of the project is an experiment I used to improve my knowledge of linguistics and natural language processing.
 
-The prolog-talk.lisp file contais an english sentence parser (TODO...)
+The prolog-talk.lisp file is an english sentence parser, written using a mix of lisp and prolog. In particular:
+ - *facts* (i.e. words and their categories) are coded in _prolog_ to exploit it's automatic backtracking. Is thus very easy to add new words or to define new relationships between them.
+ - *finite state automatas* are also prolog fact, but written in a special DSL using _lisp macros_. Sometimes prolog programs needs long lists of facts, and a macro system is perfect to generate them. This was to /main reason for the common-lisp/prolog/ coupling.
 
 **** Usage
 
@@ -47,7 +49,7 @@ The program is not perfect, but can handle english phrases of a certain complexi
 #+BEGIN_SRC
 input> the monkey heard about the very next ship which is yellow and green
 (:SENTENCE (:NOMINAL (:ARTICLE THE) (:NOUN MONKEY))
- (:VERBAL :INTRANSITIVE (:PAST-SIMPLE (:PAST-PART HEARD))
+ (:VERBAL :INTRANSITIVE (:PAST-SIMPLE (:IMPERFECT HEARD))
   (:PREPOSITIONAL (:PREP ABOUT)
    (:NOMINAL (:ARTICLE THE)
     (:ADJECTIVAL (:ADVERBAL (:ADVERB VERY)) (:ADJ NEXT)) (:NOUN SHIP)
@@ -81,8 +83,8 @@ digraph G {
 "VERBAL (2)" -> "INTRANSITIVE (2 1)"
 "INTRANSITIVE (2 1)" [style=filled,color=yellow]
 "VERBAL (2)" -> "PAST-SIMPLE (2 2)"
-"PAST-SIMPLE (2 2)" -> "PAST-PART (2 2 1)"
-"PAST-PART (2 2 1)" -> "HEARD (2 2 1 1)"
+"PAST-SIMPLE (2 2)" -> "IMPERFECT (2 2 1)"
+"IMPERFECT (2 2 1)" -> "HEARD (2 2 1 1)"
 "HEARD (2 2 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
 
 "VERBAL (2)" -> "PREPOSITIONAL (2 3)"
@@ -171,6 +173,8 @@ Here two parse trees are returned. In the first one the prepositional syntagm "o
 
 This kind of ambiguity can not be reduced without using some semantic method (and even in that case both senses are possible, so the problem probably requires also some probabilistic method...)
 
+Note: this modality consumes a *LOT* of memory, I need to switch or to write a different implementation of prolog to resolve this.
+
 ** Future Developments
 
 There are some improvements I would like to do to in future, if I will be able to reconcile study and my social life, in the next few months.
@@ -182,7 +186,7 @@ There are some improvements I would like to do to in future, if I will be able t
 
 *** Parser Improvements
 
-1) Apply optimizations (or even rewrite some parts of the parser) to improve the performance. Because, really, *IT'S SO SLOW*.
+1) Apply optimizations (or even rewrite some parts of the prolog interpreter) to improve the performance. Because, really, it uses *too much memory*.
 2) Reduce the ambiguity of verbal syntagms when prepositions and adverbs are present in sentences (this probably requires some semantics). 
 3) Add *semantical* parsing.
 

@@ -13,8 +13,8 @@ digraph G {
 "VERBAL (2)" -> "INTRANSITIVE (2 1)"
 "INTRANSITIVE (2 1)" [style=filled,color=yellow]
 "VERBAL (2)" -> "PAST-SIMPLE (2 2)"
-"PAST-SIMPLE (2 2)" -> "PAST-PART (2 2 1)"
-"PAST-PART (2 2 1)" -> "HEARD (2 2 1 1)"
+"PAST-SIMPLE (2 2)" -> "IMPERFECT (2 2 1)"
+"IMPERFECT (2 2 1)" -> "HEARD (2 2 1 1)"
 "HEARD (2 2 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
 
 "VERBAL (2)" -> "PREPOSITIONAL (2 3)"
