@@ -66,40 +66,41 @@
  ;; Define Category for Derived Words ;;
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(*- (imperfect ?VERB) (imperfect ?BASE-FORM ?VERB))
-(*- (past-part ?VERB) (past-part ?BASE-FORM ?VERB))
-(*- (ing-form  ?VERB) (ing-form  ?BASE-FORM ?VERB))
+(*- (base-verb-t   ?BASE-FORM) (verb-t ?BASE-FORM ?PL-FORM ?IMPERFECT ?ING-FORM ?PAST-PART))
+(*- (plural-verb-t ?PL-FORM)   (verb-t ?BASE-FORM ?PL-FORM ?IMPERFECT ?ING-FORM ?PAST-PART))
+(*- (imperfect-t   ?IMPERFECT) (verb-t ?BASE-FORM ?PL-FORM ?IMPERFECT ?ING-FORM ?PAST-PART))
+(*- (ing-form-t    ?ING-FORM)  (verb-t ?BASE-FORM ?PL-FORM ?IMPERFECT ?ING-FORM ?PAST-PART))
+(*- (past-part-t   ?PAST_PART) (verb-t ?BASE-FORM ?PL-FORM ?IMPERFECT ?ING-FORM ?PAST-PART))
+
+(*- (base-verb-i   ?BASE-FORM) (verb-i ?BASE-FORM ?PL-FORM ?IMPERFECT ?ING-FORM ?PAST-PART))
+(*- (plural-verb-i ?PL-FORM)   (verb-i ?BASE-FORM ?PL-FORM ?IMPERFECT ?ING-FORM ?PAST-PART))
+(*- (imperfect-i   ?IMPERFECT) (verb-i ?BASE-FORM ?PL-FORM ?IMPERFECT ?ING-FORM ?PAST-PART))
+(*- (ing-form-i    ?ING-FORM)  (verb-i ?BASE-FORM ?PL-FORM ?IMPERFECT ?ING-FORM ?PAST-PART))
+(*- (past-part-i   ?PAST_PART) (verb-i ?BASE-FORM ?PL-FORM ?IMPERFECT ?ING-FORM ?PAST-PART))
+
+(*- (verb ?VERB) (base-verb-t   ?VERB) (cut))
+(*- (verb ?VERB) (plural-verb-t ?VERB) (cut))
+(*- (verb ?VERB) (imperfect-t   ?VERB) (cut))
+(*- (verb ?VERB) (ing-form-t    ?VERB) (cut))
+(*- (verb ?VERB) (past-part-t   ?VERB) (cut))
+
+(*- (verb ?VERB) (base-verb-i   ?VERB) (cut))
+(*- (verb ?VERB) (plural-verb-i ?VERB) (cut))
+(*- (verb ?VERB) (imperfect-i   ?VERB) (cut))
+(*- (verb ?VERB) (ing-form-i    ?VERB) (cut))
+(*- (verb ?VERB) (past-part-i   ?VERB) (cut))
 
 ; TODO:
 ; (*- (verbal-noun ?VN) (verbal-noun ?BASE-VERB ?VN))
 
-(*- (verb-conj ?BASE-FORM ?VERB) (imperfect ?BASE-FORM ?VERB) (cut))
-(*- (verb-conj ?BASE-FORM ?VERB) (past-part ?BASE-FORM ?VERB) (cut))
-(*- (verb-conj ?BASE-FORM ?VERB) (ing-form  ?BASE-FORM ?VERB) (cut))
+(*- (noun ?NOUN) (noun1 ?NOUN ?PL-NOUN) (cut))
+(*- (noun ?NOUN) (sing-only ?NOUN))
+(*- (plural-noun ?PL-NOUN) (noun1 ?NOUN ?PL-NOUN) (cut))
+(*- (plural-noun ?PL-NOUN) (noun2 ?PL-NOUN))
 
-(*- (base-verb ?VERB) (verb-i ?VERB) (cut))
-(*- (base-verb ?VERB) (verb-t ?VERB) (cut))
+; plural pronouns
 
-(*- (plural-verb ?VERB) (base-pl ?BASE-VERB ?VERB) (base-verb ?BASE-VERB))
-
-(*- (verb ?VERB) (base-verb ?VERB) (cut))
-(*- (verb ?VERB) (verb-conj ?BASE-FORM ?VERB) (cut))
-(*- (verb ?VERB) (plural-verb ?VERB) (cut))
-
-(*- (transitive   ?VERB) (verb-t ?VERB) (cut))
-(*- (transitive   ?VERB) (verb-conj ?BASE-FORM ?VERB) (verb-t ?BASE-FORM) (cut))
-
-(*- (intransitive ?VERB) (verb-i ?VERB) (cut))
-(*- (intransitive ?VERB) (verb-conj ?BASE-FORM ?VERB) (verb-i ?BASE-FORM) (cut))
-
-(*- (noun ?NOUN) (plural-noun ?NOUN) (cut) (fail))
-(*- (noun ?NOUN) (noun1 ?NOUN) (cut))
-(*- (noun ?NOUN) (noun2 ?NOUN) (cut))
-
-(*- (noun2 ?NOUN) (base-pl ?SING ?NOUN) (noun1 ?SING))
-(*- (plural ?WORD) (base-pl ?WORD2 ?WORD))
-
-(*- (plural-noun ?PNOUN) (base-pl ?SNOUN ?PNOUN) (noun ?SNOUN))
+(*- (pronoun ?PRONOUN) (pl-pronoun ?PRONOUN))
 
 ; another heuristic for adjectivable nouns
 
@@ -566,38 +567,38 @@
 (detector present-simple
   "Recognize present simple."
   (:start 0) (:end 1)
-  (:arc 0 1 verb-i (:set :intransitive))
-  (:arc 0 1 verb-t (:set :transitive)))
+  (:arc 0 1 base-verb-i (:set :intransitive))
+  (:arc 0 1 base-verb-t (:set :transitive)))
 
 (detector present-continuous
   "Recognize present continuous."
   (:start 0) (:end 2)
   (:arc 0 1 to-be)
   (:arc 1 1 adverbal)
-  (:arc 1 2 ing-form intransitive (:set :intransitive))
-  (:arc 1 2 ing-form transitive   (:set :transitive)))
+  (:arc 1 2 ing-form-i (:set :intransitive))
+  (:arc 1 2 ing-form-t (:set :transitive)))
 
 (detector present-perfect
   "Recognize present perfect."
   (:start 0) (:end 2)
   (:arc 0 1 to-have)
   (:arc 1 1 adverbal)
-  (:arc 1 2 past-part intransitive (:set :intransitive))
-  (:arc 1 2 past-part transitive   (:set :transitive)))
+  (:arc 1 2 past-part-i (:set :intransitive))
+  (:arc 1 2 past-part-t  (:set :transitive)))
 
 (detector past-simple
   "Recognize past simple."
   (:start 0) (:end 1)
-  (:arc 0 1 imperfect intransitive (:set :intransitive))
-  (:arc 0 1 imperfect transitive   (:set :transitive)))
+  (:arc 0 1 imperfect-i (:set :intransitive))
+  (:arc 0 1 imperfect-t (:set :transitive)))
 
 (detector future-simple
   "Recognize future simple."
   (:start 0) (:end 2)
   (:arc 0 1 will)
   (:arc 1 1 adverbal)
-  (:arc 1 2 verb-i (:set :intransitive))
-  (:arc 1 2 verb-t (:set :transitive)))
+  (:arc 1 2 base-verb-i (:set :intransitive))
+  (:arc 1 2 base-verb-t (:set :transitive)))
 
 (detector future-be-going-to
   "Recognize future be-going-to."
@@ -607,34 +608,34 @@
   (:arc 1 2 going)
   (:arc 2 3 to)
   (:arc 3 3 adverbal)
-  (:arc 3 4 verb-i (:set :intransitive))
-  (:arc 3 4 verb-t (:set :transitive)))
+  (:arc 3 4 base-verb-i (:set :intransitive))
+  (:arc 3 4 base-verb-t (:set :transitive)))
 
 (detector present-conditional
   "Recognize present conditional."
   (:start 0) (:end 2)
   (:arc 0 1 cond-aux)
   (:arc 1 1 adverbal)
-  (:arc 1 2 verb-i (:set :intransitive))
-  (:arc 1 2 verb-t (:set :transitive)))
+  (:arc 1 2 base-verb-i (:set :intransitive))
+  (:arc 1 2 base-verb-t (:set :transitive)))
 
 (detector present-perfect-continuous
-  "Recognize present perfect."
+  "Recognize present perfect continuous."
   (:start 0) (:end 3)
   (:arc 0 1 to-have)
   (:arc 1 1 adverbal)
   (:arc 1 2 been)
   (:arc 2 2 adverbal)
-  (:arc 2 3 past-part intransitive (:set :intransitive))
-  (:arc 2 3 past-part transitive   (:set :transitive)))
+  (:arc 2 3 ing-form-i (:set :intransitive))
+  (:arc 2 3 ing-form-t (:set :transitive)))
 
 (detector past-continuous
   "Recognize present continuous."
   (:start 0) (:end 2)
   (:arc 0 1 past-be)
   (:arc 1 1 adverbal)
-  (:arc 1 2 ing-form intransitive (:set :intransitive))
-  (:arc 1 2 ing-form transitive   (:set :transitive)))
+  (:arc 1 2 ing-form-i (:set :intransitive))
+  (:arc 1 2 ing-form-t (:set :transitive)))
 
 (detector verbal
   "Recognize verbal syntagms."
@@ -669,12 +670,15 @@
 
   ; transitive
 
-  (:jump 22 :transitive (:if :gap) (:unset :gap) (:label :gap))
+  (:jump 22 23 (:if :gap) (:unset :gap) (:label :gap))
   
-  (:arc 22 :transitive nominal) ; the nominal part is NOT optional
+  (:arc 22 23 nominal) ; the nominal part is NOT optional
 
-  (:arc :transitive :transitive adverbal)
-  (:arc :transitive :transitive prepositional))
+  (:arc 23 24 adverbal)
+  (:arc 23 24 prepositional)
+
+  (:jump 23 :transitive (:unset :gap))
+  (:jump 24 :transitive (:unset :gap)))
 
 (detector sentence
   "Recognize a sentence."
@@ -738,7 +742,7 @@
 
     (format t "digraph G {~%~%")
     (if multiple-trees-trigger
-	(loop for i from 1 below (length parsed-sentence)
+	(loop for i from 1 upto (length parsed-sentence)
 	   do (dot-output-inner (nth (1- i) parsed-sentence) (list i)))
 	(dot-output-inner parsed-sentence))
     (format t "~%}")))
@@ -763,6 +767,8 @@
 (defun repl ()
   "Interface."
   
+  #+SBCL (sb-ext:gc :full t)
+
   (format t "~&input> ")
   (finish-output nil)
   

@@ -24,7 +24,7 @@ This part of the project is an experiment I used to improve my knowledge of ling
 
 The prolog-talk.lisp file is an english sentence parser, written using a mix of lisp and prolog. In particular:
  - *facts* (i.e. words and their categories) are coded in _prolog_ to exploit it's automatic backtracking. Is thus very easy to add new words or to define new relationships between them.
- - *finite state automatas* are also prolog fact, but written in a special DSL using _lisp macros_. Sometimes prolog programs needs long lists of facts, and a macro system is perfect to generate them. This was to /main reason for the common-lisp/prolog/ coupling.
+ - *finite state automatas* are also prolog fact, but written in a special DSL using _lisp macros_. Sometimes prolog programs needs long lists of facts, and a macro system is perfect to generate them. This was the /main reason for the common-lisp/prolog/ coupling.
 
 **** Usage
 
