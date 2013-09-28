@@ -1,0 +1,74 @@
+digraph G {
+
+"SENTENCE NIL" -> "NOMINAL (1)"
+"NOMINAL (1)" -> "ARTICLE (1 1)"
+"ARTICLE (1 1)" -> "THE (1 1 1)"
+"THE (1 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"NOMINAL (1)" -> "NOUN (1 2)"
+"NOUN (1 2)" -> "MONKEY (1 2 1)"
+"MONKEY (1 2 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"SENTENCE NIL" -> "VERBAL (2)"
+"VERBAL (2)" -> "INTRANSITIVE (2 1)"
+"INTRANSITIVE (2 1)" [style=filled,color=yellow]
+"VERBAL (2)" -> "PAST-SIMPLE (2 2)"
+"PAST-SIMPLE (2 2)" -> "PAST-PART (2 2 1)"
+"PAST-PART (2 2 1)" -> "HEARD (2 2 1 1)"
+"HEARD (2 2 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"VERBAL (2)" -> "PREPOSITIONAL (2 3)"
+"PREPOSITIONAL (2 3)" -> "PREP (2 3 1)"
+"PREP (2 3 1)" -> "ABOUT (2 3 1 1)"
+"ABOUT (2 3 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"PREPOSITIONAL (2 3)" -> "NOMINAL (2 3 2)"
+"NOMINAL (2 3 2)" -> "ARTICLE (2 3 2 1)"
+"ARTICLE (2 3 2 1)" -> "THE (2 3 2 1 1)"
+"THE (2 3 2 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"NOMINAL (2 3 2)" -> "ADJECTIVAL (2 3 2 2)"
+"ADJECTIVAL (2 3 2 2)" -> "ADVERBAL (2 3 2 2 1)"
+"ADVERBAL (2 3 2 2 1)" -> "ADVERB (2 3 2 2 1 1)"
+"ADVERB (2 3 2 2 1 1)" -> "VERY (2 3 2 2 1 1 1)"
+"VERY (2 3 2 2 1 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"ADJECTIVAL (2 3 2 2)" -> "ADJ (2 3 2 2 2)"
+"ADJ (2 3 2 2 2)" -> "NEXT (2 3 2 2 2 1)"
+"NEXT (2 3 2 2 2 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"NOMINAL (2 3 2)" -> "NOUN (2 3 2 3)"
+"NOUN (2 3 2 3)" -> "SHIP (2 3 2 3 1)"
+"SHIP (2 3 2 3 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"NOMINAL (2 3 2)" -> "PRONOMINAL (2 3 2 4)"
+"PRONOMINAL (2 3 2 4)" -> "GAP-PRONOUN (2 3 2 4 1)"
+"GAP-PRONOUN (2 3 2 4 1)" -> "WHICH (2 3 2 4 1 1)"
+"WHICH (2 3 2 4 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"PRONOMINAL (2 3 2 4)" -> "SENTENCE (2 3 2 4 2)"
+"SENTENCE (2 3 2 4 2)" -> "GAP (2 3 2 4 2 1)"
+"GAP (2 3 2 4 2 1)" [style=filled,color=red]
+"SENTENCE (2 3 2 4 2)" -> "VERBAL (2 3 2 4 2 2)"
+"VERBAL (2 3 2 4 2 2)" -> "INTRANSITIVE (2 3 2 4 2 2 1)"
+"INTRANSITIVE (2 3 2 4 2 2 1)" [style=filled,color=yellow]
+"VERBAL (2 3 2 4 2 2)" -> "PRESENT-SIMPLE (2 3 2 4 2 2 2)"
+"PRESENT-SIMPLE (2 3 2 4 2 2 2)" -> "VERB-I (2 3 2 4 2 2 2 1)"
+"VERB-I (2 3 2 4 2 2 2 1)" -> "IS (2 3 2 4 2 2 2 1 1)"
+"IS (2 3 2 4 2 2 2 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"VERBAL (2 3 2 4 2 2)" -> "ADJECTIVAL (2 3 2 4 2 2 3)"
+"ADJECTIVAL (2 3 2 4 2 2 3)" -> "ADJ (2 3 2 4 2 2 3 1)"
+"ADJ (2 3 2 4 2 2 3 1)" -> "YELLOW (2 3 2 4 2 2 3 1 1)"
+"YELLOW (2 3 2 4 2 2 3 1 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"ADJECTIVAL (2 3 2 4 2 2 3)" -> "CONJ (2 3 2 4 2 2 3 2)"
+"CONJ (2 3 2 4 2 2 3 2)" -> "AND (2 3 2 4 2 2 3 2 1)"
+"AND (2 3 2 4 2 2 3 2 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+"ADJECTIVAL (2 3 2 4 2 2 3)" -> "ADJ (2 3 2 4 2 2 3 3)"
+"ADJ (2 3 2 4 2 2 3 3)" -> "GREEN (2 3 2 4 2 2 3 3 1)"
+"GREEN (2 3 2 4 2 2 3 3 1)" [shape=box,style=filled,color=".7 .3 1.0"]
+
+
+}
